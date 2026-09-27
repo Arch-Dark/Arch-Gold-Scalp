@@ -36,6 +36,11 @@
           Journal
         </button>
 
+        <button class="nav-button" data-page="capital">
+          <span>◈</span>
+          Capitaux
+        </button>
+
         <button class="nav-button" data-page="calculator">
           <span>⌗</span>
           Calculateur
@@ -50,7 +55,7 @@
 
       <div class="sidebar-footer">
         <span>Trading Journal</span>
-        <small>Version 1.0</small>
+        <small>Version 1.1</small>
       </div>
 
     </aside>
@@ -92,8 +97,8 @@
 
           <div class="card">
             <span class="card-label">Capital actuel</span>
-            <strong id="dashboard-capital">$10,000.00</strong>
-            <small>Capital de départ : <span id="dashboard-start-capital">$10,000.00</span></small>
+            <strong id="dashboard-capital">—</strong>
+            <small>Capital actif : <span id="dashboard-capital-name">Aucun</span></small>
           </div>
 
           <div class="card">
@@ -111,7 +116,7 @@
           <div class="card">
             <span class="card-label">Trades</span>
             <strong id="dashboard-trades">0</strong>
-            <small>Trades enregistrés</small>
+            <small>Trades du capital actif</small>
           </div>
 
         </div>
@@ -153,13 +158,13 @@
           <div class="panel-header">
             <div>
               <h3>Evolution du capital</h3>
-              <p>Evolution basée sur les trades enregistrés.</p>
+              <p>Evolution basée sur les trades du capital actif.</p>
             </div>
           </div>
 
           <div class="equity-chart" id="equity-chart">
             <div class="empty-chart">
-              Aucun trade enregistré.
+              Aucun capital actif.
             </div>
           </div>
 
@@ -172,7 +177,7 @@
           <div class="panel-header">
             <div>
               <h3>Derniers trades</h3>
-              <p>Les dernières opérations enregistrées.</p>
+              <p>Les dernières opérations du capital actif.</p>
             </div>
 
             <button class="secondary-button" data-page-button="journal">
@@ -238,6 +243,7 @@
               <thead>
                 <tr>
                   <th>Date</th>
+                  <th>Capital</th>
                   <th>Actif</th>
                   <th>Direction</th>
                   <th>Entrée</th>
@@ -253,7 +259,7 @@
               <tbody id="journal-trades">
 
                 <tr>
-                  <td colspan="10" class="empty">
+                  <td colspan="11" class="empty">
                     Aucun trade enregistré.
                   </td>
                 </tr>
@@ -261,6 +267,65 @@
               </tbody>
 
             </table>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- CAPITALS -->
+      <section class="page" id="page-capital">
+
+        <div class="page-heading">
+
+          <div>
+            <h3>Mes capitaux</h3>
+            <p>Gère tes capitaux actifs et archivés.</p>
+          </div>
+
+          <button class="primary-button" id="open-capital-modal">
+            + Ajouter un capital
+          </button>
+
+        </div>
+
+
+        <div class="panel">
+
+          <div class="panel-header">
+            <div>
+              <h3>Capital actif</h3>
+              <p>Un seul capital peut être actif à la fois.</p>
+            </div>
+          </div>
+
+          <div id="active-capital-container" class="capital-container">
+
+            <div class="empty-capital">
+              Aucun capital actif.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="panel">
+
+          <div class="panel-header">
+            <div>
+              <h3>Capitaux archivés</h3>
+              <p>Historique de tes anciens capitaux.</p>
+            </div>
+          </div>
+
+          <div id="archived-capitals-container" class="capital-container">
+
+            <div class="empty-capital">
+              Aucun capital archivé.
+            </div>
 
           </div>
 
@@ -289,7 +354,7 @@
             <div class="panel-header">
               <div>
                 <h3>Paramètres</h3>
-                <p>Définis les paramètres de ton trade.</p>
+                <p>Les paramètres du capital actif sont utilisés.</p>
               </div>
             </div>
 
@@ -297,25 +362,51 @@
             <div class="form-grid">
 
               <div class="form-group">
-                <label>Capital</label>
+                <label>Capital actif</label>
+
                 <input
-                  type="number"
-                  id="calc-capital"
-                  value="10000"
-                  min="0"
-                  step="0.01"
+                  type="text"
+                  id="calc-capital-name"
+                  value="Aucun capital actif"
+                  readonly
                 >
               </div>
 
 
               <div class="form-group">
-                <label>Risque (%)</label>
+                <label>Solde actuel</label>
+
                 <input
                   type="number"
-                  id="calc-risk"
-                  value="1"
+                  id="calc-capital"
+                  value="0"
                   min="0"
                   step="0.01"
+                  readonly
+                >
+              </div>
+
+
+              <div class="form-group">
+                <label>Mode de risque</label>
+
+                <input
+                  type="text"
+                  id="calc-risk-mode"
+                  value="Aucun"
+                  readonly
+                >
+              </div>
+
+
+              <div class="form-group">
+                <label>Risque par trade</label>
+
+                <input
+                  type="text"
+                  id="calc-risk-display"
+                  value="0"
+                  readonly
                 >
               </div>
 
@@ -394,32 +485,32 @@
 
               <div class="result">
                 <span>Risque autorisé</span>
-                <strong id="calc-risk-money">$100.00</strong>
+                <strong id="calc-risk-money">$0.00</strong>
               </div>
 
               <div class="result">
                 <span>Distance SL</span>
-                <strong id="calc-distance">500 pips</strong>
+                <strong id="calc-distance">0 pips</strong>
               </div>
 
               <div class="result">
                 <span>Taille de position</span>
-                <strong id="calc-lot">0.20 lot</strong>
+                <strong id="calc-lot">0.00 lot</strong>
               </div>
 
               <div class="result">
                 <span>Take Profit</span>
-                <strong id="calc-tp">2010.00</strong>
+                <strong id="calc-tp">—</strong>
               </div>
 
               <div class="result">
                 <span>Gain potentiel</span>
-                <strong id="calc-profit">$200.00</strong>
+                <strong id="calc-profit">$0.00</strong>
               </div>
 
               <div class="result">
                 <span>Perte potentielle</span>
-                <strong id="calc-loss">-$100.00</strong>
+                <strong id="calc-loss">-$0.00</strong>
               </div>
 
             </div>
@@ -432,17 +523,17 @@
             <h3>Règle de risque</h3>
 
             <p>
-              Le montant risqué est calculé à partir du capital
-              et du pourcentage de risque.
+              Le montant risqué provient automatiquement
+              du capital actif.
             </p>
 
             <div class="formula">
-              Risque = Capital × Risque %
+              Risque % = Capital × Pourcentage
             </div>
 
             <p>
-              La taille de position dépend ensuite de la distance
-              entre ton entrée et ton Stop Loss.
+              Si le capital utilise un montant fixe,
+              ce montant est directement utilisé comme risque.
             </p>
 
           </div>
@@ -598,7 +689,166 @@
   </div>
 
 
-  <!-- MODAL TRADE -->
+  <!-- CAPITAL MODAL -->
+
+  <div class="modal-overlay" id="capital-modal">
+
+    <div class="modal capital-modal">
+
+      <div class="modal-header">
+
+        <div>
+          <h3 id="capital-modal-title">Ajouter un capital</h3>
+          <p>Configure les paramètres de ton capital.</p>
+        </div>
+
+        <button class="close-button" id="close-capital-modal">
+          ×
+        </button>
+
+      </div>
+
+
+      <form id="capital-form">
+
+        <input type="hidden" id="capital-id">
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label>Nom du capital</label>
+
+            <input
+              type="text"
+              id="capital-name"
+              placeholder="Ex: Capital Principal"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Capital initial</label>
+
+            <input
+              type="number"
+              id="capital-initial"
+              min="0"
+              step="0.01"
+              placeholder="Ex: 1000"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Solde actuel</label>
+
+            <input
+              type="number"
+              id="capital-current"
+              min="0"
+              step="0.01"
+              placeholder="Même valeur que le capital initial"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Mode de risque</label>
+
+            <select id="capital-risk-mode">
+
+              <option value="percentage">
+                Pourcentage (%)
+              </option>
+
+              <option value="fixed">
+                Montant fixe ($)
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label id="capital-risk-label">
+              Risque par trade (%)
+            </label>
+
+            <input
+              type="number"
+              id="capital-risk-value"
+              min="0"
+              step="0.01"
+              value="1"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>RR par défaut</label>
+
+            <select id="capital-default-rr">
+
+              <option value="1">RR 1</option>
+              <option value="2" selected>RR 2</option>
+              <option value="3">RR 3</option>
+              <option value="4">RR 4</option>
+              <option value="5">RR 5</option>
+              <option value="6">RR 6</option>
+              <option value="7">RR 7</option>
+              <option value="8">RR 8</option>
+              <option value="9">RR 9</option>
+              <option value="10">RR 10</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            id="cancel-capital"
+          >
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            class="primary-button"
+          >
+            Enregistrer le capital
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- TRADE MODAL -->
 
   <div class="modal-overlay" id="trade-modal">
 
@@ -619,6 +869,12 @@
 
 
       <form id="trade-form">
+
+        <div class="trade-active-capital">
+          <span>Capital utilisé</span>
+          <strong id="trade-capital-name">Aucun capital actif</strong>
+        </div>
+
 
         <div class="form-grid">
 
