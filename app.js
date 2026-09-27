@@ -2,12 +2,25 @@
 
 /*
   ==========================================================
-  TRADING PLAN - APPLICATION V2
+  TRADING PLAN - APPLICATION V3
+  ==========================================================
+
+  VERSION APP-READY
+
+  Cette version conserve le fonctionnement actuel de
+  l'application tout en préparant le projet pour :
+
+  - PWA
+  - Android
+  - PC
+  - Export / import des données
+  - Évolution du stockage
+  - Meilleure gestion mobile
+  - Meilleure robustesse des données
+
   ==========================================================
 
   CALCUL DU RISQUE / LOT
-
-  Le lot est toujours calculé à partir de :
 
   Risque du capital
         ↓
@@ -19,7 +32,7 @@
         ↓
   Taille du lot automatique
 
-  FORMULE GÉNÉRALE :
+  FORMULE :
 
   Lot brut =
     Risque monétaire /
@@ -32,8 +45,6 @@
   1 lot    = 100 oz = $1.00 / pip
   0.10 lot = 10 oz  = $0.10 / pip
   0.01 lot = 1 oz   = $0.01 / pip
-
-  Pips Gold :
 
   BUY  = (Sortie - Entrée) × 100
   SELL = (Entrée - Sortie) × 100
@@ -49,8 +60,6 @@
   GBPUSD
   USDCHF
 
-  Pips :
-
   BUY  = (Sortie - Entrée) × 10000
   SELL = (Entrée - Sortie) × 10000
 
@@ -60,8 +69,6 @@
 
   USDJPY
 
-  Pips :
-
   BUY  = (Sortie - Entrée) × 100
   SELL = (Entrée - Sortie) × 100
 
@@ -70,26 +77,59 @@
 
 
 /* =========================================================
+   APPLICATION CONFIGURATION
+========================================================= */
+
+const APP_CONFIG = {
+
+  version: "3.0.0",
+
+  dataVersion: 1,
+
+  currency: "USD",
+
+  locale: "fr-FR",
+
+  lotStep: 0.01,
+
+  maxRiskToleranceRatio: 0.000001,
+
+  minRiskTolerance: 0.01,
+
+  chartHeight: 220
+
+};
+
+
+/* =========================================================
    STORAGE
 ========================================================= */
 
 const STORAGE_KEYS = {
+
   trades: "trading-plan-trades",
+
   capitals: "trading-plan-capitals",
-  plan: "trading-plan-settings"
+
+  plan: "trading-plan-settings",
+
+  metadata: "trading-plan-metadata"
+
 };
 
 
-function loadJSON(key, fallback = []) {
+function safeParseJSON(value, fallback) {
+
+  if (!value) {
+
+    return fallback;
+
+  }
+
 
   try {
 
-    const value =
-      JSON.parse(
-        localStorage.getItem(key)
-      );
-
-    return value ?? fallback;
+    return JSON.parse(value);
 
   } catch {
 
@@ -100,11 +140,97 @@ function loadJSON(key, fallback = []) {
 }
 
 
-function saveJSON(key, value) {
+function loadJSON(
+  key,
+  fallback = []
+) {
 
-  localStorage.setItem(
-    key,
-    JSON.stringify(value)
+  try {
+
+    const value =
+      localStorage.getItem(
+        key
+      );
+
+
+    const parsed =
+      safeParseJSON(
+        value,
+        fallback
+      );
+
+
+    return parsed ?? fallback;
+
+  } catch {
+
+    return fallback;
+
+  }
+
+}
+
+
+function saveJSON(
+  key,
+  value
+) {
+
+  try {
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(value)
+    );
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "Impossible de sauvegarder les données :",
+      error
+    );
+
+    alert(
+      "Impossible de sauvegarder les données sur cet appareil."
+    );
+
+    return false;
+
+  }
+
+}
+
+
+function initializeStorageMetadata() {
+
+  const metadata =
+    loadJSON(
+      STORAGE_KEYS.metadata,
+      {}
+    );
+
+
+  const updatedMetadata = {
+
+    ...metadata,
+
+    appVersion:
+      APP_CONFIG.version,
+
+    dataVersion:
+      APP_CONFIG.dataVersion,
+
+    lastOpenedAt:
+      new Date().toISOString()
+
+  };
+
+
+  saveJSON(
+    STORAGE_KEYS.metadata,
+    updatedMetadata
   );
 
 }
@@ -136,7 +262,7 @@ function loadPlan() {
 
 function savePlan(plan) {
 
-  saveJSON(
+  return saveJSON(
     STORAGE_KEYS.plan,
     plan
   );
@@ -197,33 +323,95 @@ const capitalForm =
 
 
 /* =========================================================
+   UTILITY
+========================================================= */
+
+function isFiniteNumber(value) {
+
+  return Number.isFinite(
+    Number(value)
+  );
+
+}
+
+
+function positiveNumber(value) {
+
+  const number =
+    Number(value);
+
+
+  return Number.isFinite(number) &&
+    number > 0
+    ? number
+    : 0;
+
+}
+
+
+function clamp(
+  value,
+  min,
+  max
+) {
+
+  return Math.min(
+    Math.max(
+      value,
+      min
+    ),
+    max
+  );
+
+}
+
+
+/* =========================================================
    FORMATTERS
 ========================================================= */
 
 function formatMoney(value) {
 
   const number =
-    Number(value) || 0;
+    Number(value);
+
+
+  const safeNumber =
+    Number.isFinite(number)
+      ? number
+      : 0;
 
 
   return new Intl.NumberFormat(
     "en-US",
     {
       style: "currency",
-      currency: "USD",
+      currency: APP_CONFIG.currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }
-  ).format(number);
+  ).format(
+    safeNumber
+  );
 
 }
 
 
 function formatPercent(value) {
 
-  return `${(
-    Number(value) || 0
-  ).toFixed(2)}%`;
+  const number =
+    Number(value);
+
+
+  const safeNumber =
+    Number.isFinite(number)
+      ? number
+      : 0;
+
+
+  return `${safeNumber.toFixed(
+    2
+  )}%`;
 
 }
 
@@ -233,16 +421,28 @@ function formatNumber(
   decimals = 2
 ) {
 
-  return (
-    Number(value) || 0
-  ).toFixed(decimals);
+  const number =
+    Number(value);
+
+
+  const safeNumber =
+    Number.isFinite(number)
+      ? number
+      : 0;
+
+
+  return safeNumber.toFixed(
+    decimals
+  );
 
 }
 
 
 function escapeHTML(value) {
 
-  return String(value ?? "")
+  return String(
+    value ?? ""
+  )
     .replaceAll(
       "&",
       "&amp;"
@@ -270,12 +470,16 @@ function escapeHTML(value) {
 function formatDate(dateString) {
 
   if (!dateString) {
+
     return "—";
+
   }
 
 
   const date =
-    new Date(dateString);
+    new Date(
+      dateString
+    );
 
 
   if (
@@ -290,7 +494,7 @@ function formatDate(dateString) {
 
 
   return date.toLocaleDateString(
-    "fr-FR",
+    APP_CONFIG.locale,
     {
       day: "2-digit",
       month: "2-digit",
@@ -313,15 +517,21 @@ function getDefaultDateTime() {
 
 
   return new Date(
-    now.getTime() - offset
+    now.getTime() -
+    offset
   )
     .toISOString()
-    .slice(0, 16);
+    .slice(
+      0,
+      16
+    );
 
 }
 
 
-function createId(prefix = "") {
+function createId(
+  prefix = ""
+) {
 
   return (
     prefix +
@@ -329,8 +539,104 @@ function createId(prefix = "") {
     "-" +
     Math.random()
       .toString(36)
-      .slice(2, 8)
+      .slice(2, 10)
   );
+
+}
+
+
+/* =========================================================
+   MODAL / BODY UX
+========================================================= */
+
+let openModalCount = 0;
+
+
+function lockBodyScroll() {
+
+  openModalCount++;
+
+
+  if (
+    openModalCount === 1
+  ) {
+
+    document.body.classList.add(
+      "modal-open"
+    );
+
+  }
+
+}
+
+
+function unlockBodyScroll() {
+
+  openModalCount =
+    Math.max(
+      0,
+      openModalCount - 1
+    );
+
+
+  if (
+    openModalCount === 0
+  ) {
+
+    document.body.classList.remove(
+      "modal-open"
+    );
+
+  }
+
+}
+
+
+function openModalElement(
+  modal
+) {
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.add(
+    "active"
+  );
+
+
+  lockBodyScroll();
+
+}
+
+
+function closeModalElement(
+  modal
+) {
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  if (
+    modal.classList.contains(
+      "active"
+    )
+  ) {
+
+    modal.classList.remove(
+      "active"
+    );
+
+    unlockBodyScroll();
+
+  }
 
 }
 
@@ -342,33 +648,50 @@ function createId(prefix = "") {
 const pageInformation = {
 
   dashboard: {
+
     title: "Dashboard",
+
     description:
       "Vue générale de ta performance."
+
   },
+
 
   journal: {
+
     title: "Journal",
+
     description:
       "Enregistre et analyse chaque opération."
+
   },
+
 
   capitals: {
+
     title: "Capitaux",
+
     description:
       "Gère tes capitaux actifs et archivés."
+
   },
 
+
   plan: {
+
     title: "Plan de trading",
+
     description:
       "Définis les règles que tu dois respecter."
+
   }
 
 };
 
 
-function showPage(pageName) {
+function showPage(
+  pageName
+) {
 
   pages.forEach(
     page => {
@@ -450,7 +773,7 @@ function showPage(pageName) {
 
   window.scrollTo({
     top: 0,
-    behavior: "smooth"
+    behavior: "auto"
   });
 
 }
@@ -512,7 +835,9 @@ function getActiveCapital() {
 }
 
 
-function getCapitalById(id) {
+function getCapitalById(
+  id
+) {
 
   return (
     capitals.find(
@@ -524,7 +849,9 @@ function getCapitalById(id) {
 }
 
 
-function getCapitalBalance(capital) {
+function getCapitalBalance(
+  capital
+) {
 
   if (!capital) {
 
@@ -552,7 +879,10 @@ function getCapitalBalance(capital) {
       capital.initialCapital
     ) +
     capitalTrades.reduce(
-      (sum, trade) =>
+      (
+        sum,
+        trade
+      ) =>
         sum +
         Number(
           trade.pnl || 0
@@ -567,16 +897,18 @@ function getCapitalBalance(capital) {
 /*
   Risque monétaire actuel du capital.
 
-  Si le capital utilise un pourcentage :
+  Percentage :
 
     Balance actuelle × risque %
 
-  Si le capital utilise un montant fixe :
+  Fixed :
 
     montant fixe
 */
 
-function getCapitalRisk(capital) {
+function getCapitalRisk(
+  capital
+) {
 
   if (!capital) {
 
@@ -665,17 +997,26 @@ function getCapitalRiskPercent(
       capital.riskAmount || 0
     ) /
     balance
-  ) * 100;
+  ) *
+  100;
 
 }
 
+
+/*
+  Garantit qu'un seul capital soit actif.
+
+  Si plusieurs capitaux sont accidentellement actifs,
+  le premier reste actif et les autres sont archivés.
+*/
 
 function ensureSingleActiveCapital() {
 
   const active =
     capitals.filter(
       capital =>
-        capital.status === "active"
+        capital.status ===
+        "active"
     );
 
 
@@ -708,64 +1049,199 @@ function ensureSingleActiveCapital() {
 }
 
 
+/*
+  Si aucun capital actif n'existe mais qu'un capital
+  archivé existe, on peut réactiver automatiquement
+  le plus récent uniquement lorsque nécessaire.
+
+  Cela évite de laisser l'application sans capital
+  utilisable après une archive accidentelle.
+*/
+
+function ensureActiveCapitalIfPossible() {
+
+  if (
+    getActiveCapital()
+  ) {
+
+    return;
+
+  }
+
+
+  if (!capitals.length) {
+
+    return;
+
+  }
+
+
+  const archived =
+    capitals
+      .filter(
+        capital =>
+          capital.status ===
+          "archived"
+      )
+      .sort(
+        (a, b) =>
+          new Date(
+            b.createdAt || 0
+          ) -
+          new Date(
+            a.createdAt || 0
+          )
+      );
+
+
+  if (!archived.length) {
+
+    return;
+
+  }
+
+
+  archived[0].status =
+    "active";
+
+
+  saveJSON(
+    STORAGE_KEYS.capitals,
+    capitals
+  );
+
+}
+
+
 function openCapitalModal(
   capital = null
 ) {
 
-  capitalModal.classList.add(
-    "active"
+  if (!capital && capitalForm) {
+
+    capitalForm.reset();
+
+  }
+
+
+  openModalElement(
+    capitalModal
   );
 
 
-  document.getElementById(
-    "capital-modal-title"
-  ).textContent =
-    capital
-      ? "Modifier le capital"
-      : "Nouveau capital";
+  const title =
+    document.getElementById(
+      "capital-modal-title"
+    );
 
 
-  document.getElementById(
-    "capital-id"
-  ).value =
-    capital?.id || "";
+  if (title) {
+
+    title.textContent =
+      capital
+        ? "Modifier le capital"
+        : "Nouveau capital";
+
+  }
 
 
-  document.getElementById(
-    "capital-name"
-  ).value =
-    capital?.name || "";
+  const id =
+    document.getElementById(
+      "capital-id"
+    );
 
 
-  document.getElementById(
-    "capital-initial"
-  ).value =
-    capital?.initialCapital ?? "";
+  const name =
+    document.getElementById(
+      "capital-name"
+    );
 
 
-  document.getElementById(
-    "capital-risk-mode"
-  ).value =
-    capital?.riskMode ||
-    "percentage";
+  const initial =
+    document.getElementById(
+      "capital-initial"
+    );
 
 
-  document.getElementById(
-    "capital-risk-percent"
-  ).value =
-    capital?.riskPercent ?? 1;
+  const riskMode =
+    document.getElementById(
+      "capital-risk-mode"
+    );
 
 
-  document.getElementById(
-    "capital-risk-amount"
-  ).value =
-    capital?.riskAmount ?? "";
+  const riskPercent =
+    document.getElementById(
+      "capital-risk-percent"
+    );
 
 
-  document.getElementById(
-    "capital-default-rr"
-  ).value =
-    capital?.defaultRR ?? 2;
+  const riskAmount =
+    document.getElementById(
+      "capital-risk-amount"
+    );
+
+
+  const defaultRR =
+    document.getElementById(
+      "capital-default-rr"
+    );
+
+
+  if (id) {
+
+    id.value =
+      capital?.id || "";
+
+  }
+
+
+  if (name) {
+
+    name.value =
+      capital?.name || "";
+
+  }
+
+
+  if (initial) {
+
+    initial.value =
+      capital?.initialCapital ?? "";
+
+  }
+
+
+  if (riskMode) {
+
+    riskMode.value =
+      capital?.riskMode ||
+      "percentage";
+
+  }
+
+
+  if (riskPercent) {
+
+    riskPercent.value =
+      capital?.riskPercent ?? 1;
+
+  }
+
+
+  if (riskAmount) {
+
+    riskAmount.value =
+      capital?.riskAmount ?? "";
+
+  }
+
+
+  if (defaultRR) {
+
+    defaultRR.value =
+      capital?.defaultRR ?? 2;
+
+  }
 
 
   updateCapitalRiskMode();
@@ -775,8 +1251,8 @@ function openCapitalModal(
 
 function closeCapitalModal() {
 
-  capitalModal.classList.remove(
-    "active"
+  closeModalElement(
+    capitalModal
   );
 
 }
@@ -784,10 +1260,10 @@ function closeCapitalModal() {
 
 function updateCapitalRiskMode() {
 
-  const mode =
+  const modeElement =
     document.getElementById(
       "capital-risk-mode"
-    ).value;
+    );
 
 
   const percentGroup =
@@ -800,6 +1276,21 @@ function updateCapitalRiskMode() {
     document.getElementById(
       "capital-risk-amount-group"
     );
+
+
+  if (
+    !modeElement ||
+    !percentGroup ||
+    !amountGroup
+  ) {
+
+    return;
+
+  }
+
+
+  const mode =
+    modeElement.value;
 
 
   percentGroup.classList.toggle(
@@ -820,7 +1311,7 @@ document
   .getElementById(
     "open-capital-modal"
   )
-  .addEventListener(
+  ?.addEventListener(
     "click",
     () => {
 
@@ -834,7 +1325,7 @@ document
   .getElementById(
     "close-capital-modal"
   )
-  .addEventListener(
+  ?.addEventListener(
     "click",
     closeCapitalModal
   );
@@ -844,7 +1335,7 @@ document
   .getElementById(
     "cancel-capital"
   )
-  .addEventListener(
+  ?.addEventListener(
     "click",
     closeCapitalModal
   );
@@ -854,13 +1345,13 @@ document
   .getElementById(
     "capital-risk-mode"
   )
-  .addEventListener(
+  ?.addEventListener(
     "change",
     updateCapitalRiskMode
   );
 
 
-capitalModal.addEventListener(
+capitalModal?.addEventListener(
   "click",
   event => {
 
@@ -877,7 +1368,7 @@ capitalModal.addEventListener(
 );
 
 
-capitalForm.addEventListener(
+capitalForm?.addEventListener(
   "submit",
   event => {
 
@@ -964,7 +1455,12 @@ capitalForm.addEventListener(
     if (
       riskMode ===
       "percentage" &&
-      riskPercent <= 0
+      (
+        !Number.isFinite(
+          riskPercent
+        ) ||
+        riskPercent <= 0
+      )
     ) {
 
       alert(
@@ -978,7 +1474,12 @@ capitalForm.addEventListener(
 
     if (
       riskMode === "fixed" &&
-      riskAmount <= 0
+      (
+        !Number.isFinite(
+          riskAmount
+        ) ||
+        riskAmount <= 0
+      )
     ) {
 
       alert(
@@ -990,10 +1491,29 @@ capitalForm.addEventListener(
     }
 
 
+    if (
+      !Number.isFinite(
+        defaultRR
+      ) ||
+      defaultRR < 1 ||
+      defaultRR > 10
+    ) {
+
+      alert(
+        "Le RR par défaut doit être compris entre 1 et 10."
+      );
+
+      return;
+
+    }
+
+
     if (id) {
 
       const capital =
-        getCapitalById(id);
+        getCapitalById(
+          id
+        );
 
 
       if (!capital) {
@@ -1020,6 +1540,7 @@ capitalForm.addEventListener(
 
       capital.defaultRR =
         defaultRR;
+
 
     } else {
 
@@ -1066,25 +1587,28 @@ capitalForm.addEventListener(
     }
 
 
-    saveJSON(
-      STORAGE_KEYS.capitals,
-      capitals
-    );
-
-
-    closeCapitalModal();
-
-    updateAll();
-
-
     if (
-      !id &&
-      capitals.length === 1
+      saveJSON(
+        STORAGE_KEYS.capitals,
+        capitals
+      )
     ) {
 
-      alert(
-        "Capital créé et activé."
-      );
+      closeCapitalModal();
+
+      updateAll();
+
+
+      if (
+        !id &&
+        capitals.length === 1
+      ) {
+
+        alert(
+          "Capital créé et activé."
+        );
+
+      }
 
     }
 
@@ -1092,10 +1616,14 @@ capitalForm.addEventListener(
 );
 
 
-function editCapital(id) {
+function editCapital(
+  id
+) {
 
   const capital =
-    getCapitalById(id);
+    getCapitalById(
+      id
+    );
 
 
   if (!capital) {
@@ -1112,10 +1640,14 @@ function editCapital(id) {
 }
 
 
-function archiveCapital(id) {
+function archiveCapital(
+  id
+) {
 
   const capital =
-    getCapitalById(id);
+    getCapitalById(
+      id
+    );
 
 
   if (!capital) {
@@ -1139,6 +1671,15 @@ function archiveCapital(id) {
     "archived";
 
 
+  /*
+    Si c'était le seul capital actif,
+    on active automatiquement un autre capital
+    archivé si disponible.
+  */
+
+  ensureActiveCapitalIfPossible();
+
+
   saveJSON(
     STORAGE_KEYS.capitals,
     capitals
@@ -1150,10 +1691,14 @@ function archiveCapital(id) {
 }
 
 
-function activateCapital(id) {
+function activateCapital(
+  id
+) {
 
   const capital =
-    getCapitalById(id);
+    getCapitalById(
+      id
+    );
 
 
   if (!capital) {
@@ -1166,21 +1711,13 @@ function activateCapital(id) {
   capitals.forEach(
     item => {
 
-      if (
-        item.id !== id
-      ) {
-
-        item.status =
-          "archived";
-
-      }
+      item.status =
+        item.id === id
+          ? "active"
+          : "archived";
 
     }
   );
-
-
-  capital.status =
-    "active";
 
 
   saveJSON(
@@ -1194,10 +1731,14 @@ function activateCapital(id) {
 }
 
 
-function deleteCapital(id) {
+function deleteCapital(
+  id
+) {
 
   const capital =
-    getCapitalById(id);
+    getCapitalById(
+      id
+    );
 
 
   if (!capital) {
@@ -1249,6 +1790,9 @@ function deleteCapital(id) {
     );
 
 
+  ensureActiveCapitalIfPossible();
+
+
   saveJSON(
     STORAGE_KEYS.capitals,
     capitals
@@ -1289,6 +1833,16 @@ function renderCapitals() {
     document.getElementById(
       "archived-capitals-container"
     );
+
+
+  if (
+    !activeContainer ||
+    !archivedContainer
+  ) {
+
+    return;
+
+  }
 
 
   const active =
@@ -1346,42 +1900,74 @@ function renderCapitals() {
   }
 
 
-  document.getElementById(
-    "active-capital-name"
-  ).textContent =
-    active
-      ? active.name
-      : "Aucun";
-
-
-  document.getElementById(
-    "active-capital-balance"
-  ).textContent =
-    active
-      ? formatMoney(
-          getCapitalBalance(
-            active
-          )
-        )
-      : "$0.00";
-
-
-  document.getElementById(
-    "archived-capitals-count"
-  ).textContent =
-    archived.length;
-
-
-  const globalStats =
-    calculateGlobalStatistics();
-
-
-  document.getElementById(
-    "capitals-global-pnl"
-  ).textContent =
-    formatMoney(
-      globalStats.totalPnl
+  const activeName =
+    document.getElementById(
+      "active-capital-name"
     );
+
+
+  const activeBalance =
+    document.getElementById(
+      "active-capital-balance"
+    );
+
+
+  const archivedCount =
+    document.getElementById(
+      "archived-capitals-count"
+    );
+
+
+  const globalPnl =
+    document.getElementById(
+      "capitals-global-pnl"
+    );
+
+
+  if (activeName) {
+
+    activeName.textContent =
+      active
+        ? active.name
+        : "Aucun";
+
+  }
+
+
+  if (activeBalance) {
+
+    activeBalance.textContent =
+      active
+        ? formatMoney(
+            getCapitalBalance(
+              active
+            )
+          )
+        : "$0.00";
+
+  }
+
+
+  if (archivedCount) {
+
+    archivedCount.textContent =
+      archived.length;
+
+  }
+
+
+  if (globalPnl) {
+
+    const globalStats =
+      calculateGlobalStatistics();
+
+
+    globalPnl.textContent =
+      formatMoney(
+        globalStats.totalPnl
+      );
+
+  }
 
 }
 
@@ -1399,7 +1985,9 @@ function renderCapitalItem(
 
   const pnl =
     balance -
-    capital.initialCapital;
+    Number(
+      capital.initialCapital
+    );
 
 
   const risk =
@@ -1412,6 +2000,12 @@ function renderCapitalItem(
     pnl >= 0
       ? "pnl-positive"
       : "pnl-negative";
+
+
+  const riskPercent =
+    getCapitalRiskPercent(
+      capital
+    );
 
 
   return `
@@ -1477,6 +2071,12 @@ function renderCapitalItem(
             risk
           )}
         </strong>
+
+        <small>
+          ${formatPercent(
+            riskPercent
+          )}
+        </small>
 
       </div>
 
@@ -1546,7 +2146,8 @@ function renderCapitalItem(
    ASSET / PIP CONFIGURATION
 ========================================================= */
 
-const LOT_STEP = 0.01;
+const LOT_STEP =
+  APP_CONFIG.lotStep;
 
 
 const ASSET_CONFIG = {
@@ -1559,6 +2160,7 @@ const ASSET_CONFIG = {
 
   },
 
+
   EURUSD: {
 
     multiplier: 10000,
@@ -1566,6 +2168,7 @@ const ASSET_CONFIG = {
     pipValue: 10
 
   },
+
 
   GBPUSD: {
 
@@ -1575,6 +2178,7 @@ const ASSET_CONFIG = {
 
   },
 
+
   AUDUSD: {
 
     multiplier: 10000,
@@ -1582,6 +2186,7 @@ const ASSET_CONFIG = {
     pipValue: 10
 
   },
+
 
   NZDUSD: {
 
@@ -1591,6 +2196,7 @@ const ASSET_CONFIG = {
 
   },
 
+
   USDJPY: {
 
     multiplier: 100,
@@ -1599,6 +2205,7 @@ const ASSET_CONFIG = {
 
   },
 
+
   USDCAD: {
 
     multiplier: 10000,
@@ -1606,6 +2213,7 @@ const ASSET_CONFIG = {
     dynamicPipValue: true
 
   },
+
 
   USDCHF: {
 
@@ -1618,7 +2226,9 @@ const ASSET_CONFIG = {
 };
 
 
-function normalizeLot(lot) {
+function normalizeLot(
+  lot
+) {
 
   const numericLot =
     Number(lot) || 0;
@@ -1897,6 +2507,133 @@ function calculateRiskAtStop(
    TRADE MODAL
 ========================================================= */
 
+function resetTradeForm() {
+
+  if (!tradeForm) {
+
+    return;
+
+  }
+
+
+  tradeForm.reset();
+
+
+  const date =
+    document.getElementById(
+      "trade-date"
+    );
+
+
+  const asset =
+    document.getElementById(
+      "trade-asset"
+    );
+
+
+  const direction =
+    document.getElementById(
+      "trade-direction"
+    );
+
+
+  const timeframe =
+    document.getElementById(
+      "trade-timeframe"
+    );
+
+
+  const rr =
+    document.getElementById(
+      "trade-rr"
+    );
+
+
+  const result =
+    document.getElementById(
+      "trade-result"
+    );
+
+
+  const beExit =
+    document.getElementById(
+      "trade-be-exit"
+    );
+
+
+  if (date) {
+
+    date.value =
+      getDefaultDateTime();
+
+  }
+
+
+  if (asset) {
+
+    asset.value =
+      "XAUUSD";
+
+  }
+
+
+  if (direction) {
+
+    direction.value =
+      "BUY";
+
+  }
+
+
+  if (timeframe) {
+
+    timeframe.value =
+      "M15";
+
+  }
+
+
+  if (rr) {
+
+    rr.value =
+      "2";
+
+  }
+
+
+  if (result) {
+
+    result.value =
+      "TP";
+
+  }
+
+
+  if (beExit) {
+
+    beExit.value =
+      "";
+
+  }
+
+
+  const beGroup =
+    document.getElementById(
+      "be-exit-group"
+    );
+
+
+  if (beGroup) {
+
+    beGroup.classList.add(
+      "hidden"
+    );
+
+  }
+
+}
+
+
 function openTradeModal() {
 
   const active =
@@ -1920,70 +2657,84 @@ function openTradeModal() {
   }
 
 
-  tradeModal.classList.add(
-    "active"
+  resetTradeForm();
+
+
+  openModalElement(
+    tradeModal
   );
 
 
-  document.getElementById(
-    "trade-date"
-  ).value =
-    getDefaultDateTime();
-
-
-  document.getElementById(
-    "trade-active-capital-name"
-  ).textContent =
-    active.name;
-
-
-  document.getElementById(
-    "trade-balance-display"
-  ).textContent =
-    formatMoney(
-      getCapitalBalance(
-        active
-      )
+  const activeName =
+    document.getElementById(
+      "trade-active-capital-name"
     );
 
 
-  document.getElementById(
-    "trade-risk-display"
-  ).textContent =
-    formatMoney(
-      getCapitalRisk(
-        active
-      )
+  const balanceDisplay =
+    document.getElementById(
+      "trade-balance-display"
     );
 
 
-  document.getElementById(
-    "trade-rr"
-  ).value =
-    String(
-      active.defaultRR || 2
+  const riskDisplay =
+    document.getElementById(
+      "trade-risk-display"
     );
 
 
-  document.getElementById(
-    "trade-result"
-  ).value =
-    "TP";
-
-
-  document.getElementById(
-    "trade-be-exit"
-  ).value =
-    "";
-
-
-  document
-    .getElementById(
-      "be-exit-group"
-    )
-    .classList.add(
-      "hidden"
+  const rr =
+    document.getElementById(
+      "trade-rr"
     );
+
+
+  if (activeName) {
+
+    activeName.textContent =
+      active.name;
+
+  }
+
+
+  if (balanceDisplay) {
+
+    balanceDisplay.textContent =
+      formatMoney(
+        getCapitalBalance(
+          active
+        )
+      );
+
+  }
+
+
+  if (riskDisplay) {
+
+    riskDisplay.textContent =
+      formatMoney(
+        getCapitalRisk(
+          active
+        )
+      );
+
+  }
+
+
+  if (rr) {
+
+    rr.value =
+      String(
+        clamp(
+          Number(
+            active.defaultRR || 2
+          ),
+          1,
+          10
+        )
+      );
+
+  }
 
 
   updateTradeCalculations();
@@ -1993,8 +2744,8 @@ function openTradeModal() {
 
 function closeTradeModal() {
 
-  tradeModal.classList.remove(
-    "active"
+  closeModalElement(
+    tradeModal
   );
 
 }
@@ -2004,7 +2755,7 @@ document
   .getElementById(
     "open-trade-modal"
   )
-  .addEventListener(
+  ?.addEventListener(
     "click",
     openTradeModal
   );
@@ -2014,7 +2765,7 @@ document
   .getElementById(
     "close-trade-modal"
   )
-  .addEventListener(
+  ?.addEventListener(
     "click",
     closeTradeModal
   );
@@ -2024,13 +2775,13 @@ document
   .getElementById(
     "cancel-trade"
   )
-  .addEventListener(
+  ?.addEventListener(
     "click",
     closeTradeModal
   );
 
 
-tradeModal.addEventListener(
+tradeModal?.addEventListener(
   "click",
   event => {
 
@@ -2060,20 +2811,20 @@ function calculateTradeValues() {
   const asset =
     document.getElementById(
       "trade-asset"
-    ).value;
+    )?.value || "";
 
 
   const direction =
     document.getElementById(
       "trade-direction"
-    ).value;
+    )?.value || "BUY";
 
 
   const entry =
     Number(
       document.getElementById(
         "trade-entry"
-      ).value
+      )?.value
     ) || 0;
 
 
@@ -2081,7 +2832,7 @@ function calculateTradeValues() {
     Number(
       document.getElementById(
         "trade-sl"
-      ).value
+      )?.value
     ) || 0;
 
 
@@ -2089,21 +2840,21 @@ function calculateTradeValues() {
     Number(
       document.getElementById(
         "trade-rr"
-      ).value
+      )?.value
     ) || 0;
 
 
   const result =
     document.getElementById(
       "trade-result"
-    ).value;
+    )?.value || "TP";
 
 
   const beExit =
     Number(
       document.getElementById(
         "trade-be-exit"
-      ).value
+      )?.value
     ) || 0;
 
 
@@ -2343,42 +3094,74 @@ function updateTradeCalculations() {
     calculateTradeValues();
 
 
-  document.getElementById(
-    "trade-risk-money"
-  ).textContent =
-    formatMoney(
-      values.riskMoney
+  const riskMoney =
+    document.getElementById(
+      "trade-risk-money"
     );
 
 
-  document.getElementById(
-    "trade-sl-pips"
-  ).textContent =
-    `${formatNumber(
-      values.slPips,
-      1
-    )} pips`;
+  const slPips =
+    document.getElementById(
+      "trade-sl-pips"
+    );
 
 
-  document.getElementById(
-    "trade-lot"
-  ).textContent =
-    `${formatNumber(
-      values.lot,
-      2
-    )} lot`;
+  const lot =
+    document.getElementById(
+      "trade-lot"
+    );
 
 
-  document.getElementById(
-    "trade-lot-value"
-  ).value =
-    values.lot.toFixed(4);
+  const lotValue =
+    document.getElementById(
+      "trade-lot-value"
+    );
+
+
+  if (riskMoney) {
+
+    riskMoney.textContent =
+      formatMoney(
+        values.riskMoney
+      );
+
+  }
+
+
+  if (slPips) {
+
+    slPips.textContent =
+      `${formatNumber(
+        values.slPips,
+        1
+      )} pips`;
+
+  }
+
+
+  if (lot) {
+
+    lot.textContent =
+      `${formatNumber(
+        values.lot,
+        2
+      )} lot`;
+
+  }
+
+
+  if (lotValue) {
+
+    lotValue.value =
+      values.lot.toFixed(4);
+
+  }
 
 
   const asset =
     document.getElementById(
       "trade-asset"
-    ).value;
+    )?.value || "";
 
 
   const priceDecimals =
@@ -2388,76 +3171,73 @@ function updateTradeCalculations() {
       : 5;
 
 
-  document.getElementById(
-    "trade-tp-display"
-  ).textContent =
-    values.tp > 0
-      ? formatNumber(
-          values.tp,
-          priceDecimals
-        )
-      : "—";
-
-
-  document.getElementById(
-    "trade-tp"
-  ).value =
-    values.tp > 0
-      ? values.tp
-      : "";
-
-
-  document.getElementById(
-    "trade-exit-display"
-  ).textContent =
-    values.exitPrice > 0
-      ? formatNumber(
-          values.exitPrice,
-          priceDecimals
-        )
-      : "—";
-
-
-  document.getElementById(
-    "trade-realized-pips"
-  ).textContent =
-    `${formatNumber(
-      values.realizedPips,
-      1
-    )} pips`;
-
-
-  document.getElementById(
-    "trade-pnl-display"
-  ).textContent =
-    formatMoney(
-      values.pnl
-    );
-
-
-  document.getElementById(
-    "trade-r-display"
-  ).textContent =
-    `${formatNumber(
-      values.r,
-      2
-    )}R`;
-
-
-  const riskCheckElement =
+  const tpDisplay =
     document.getElementById(
-      "trade-risk-check"
+      "trade-tp-display"
     );
 
 
-  if (
-    riskCheckElement
-  ) {
+  const tpHidden =
+    document.getElementById(
+      "trade-tp"
+    );
 
-    riskCheckElement.textContent =
-      formatMoney(
-        values.riskAtStop
-      );
+
+  if (tpDisplay) {
+
+    tpDisplay.textContent =
+      values.tp > 0
+        ? formatNumber(
+            values.tp,
+            priceDecimals
+          )
+        : "—";
+
+  }
+
+
+  if (tpHidden) {
+
+    tpHidden.value =
+      values.tp > 0
+        ? values.tp
+        : "";
+
+  }
+
+
+  const exitDisplay =
+    document.getElementById(
+      "trade-exit-display"
+    );
+
+
+  if (exitDisplay) {
+
+    exitDisplay.textContent =
+      values.exitPrice > 0
+        ? formatNumber(
+            values.exitPrice,
+            priceDecimals
+          )
+        : "—";
+
+  }
+
+
+  const realizedPips =
+    document.getElementById(
+      "trade-realized-pips"
+    );
+
+
+  if (realizedPips) {
+
+    realizedPips.textContent =
+      `${formatNumber(
+        values.realizedPips,
+        1
+      )} pips`;
 
   }
 
@@ -2468,30 +3248,73 @@ function updateTradeCalculations() {
     );
 
 
-  pnlElement.classList.remove(
-    "pnl-positive",
-    "pnl-negative"
-  );
+  if (pnlElement) {
+
+    pnlElement.textContent =
+      formatMoney(
+        values.pnl
+      );
 
 
-  if (
-    values.pnl > 0
-  ) {
-
-    pnlElement.classList.add(
-      "pnl-positive"
+    pnlElement.classList.remove(
+      "pnl-positive",
+      "pnl-negative"
     );
+
+
+    if (
+      values.pnl > 0
+    ) {
+
+      pnlElement.classList.add(
+        "pnl-positive"
+      );
+
+    }
+
+
+    if (
+      values.pnl < 0
+    ) {
+
+      pnlElement.classList.add(
+        "pnl-negative"
+      );
+
+    }
 
   }
 
 
-  if (
-    values.pnl < 0
-  ) {
-
-    pnlElement.classList.add(
-      "pnl-negative"
+  const rElement =
+    document.getElementById(
+      "trade-r-display"
     );
+
+
+  if (rElement) {
+
+    rElement.textContent =
+      `${formatNumber(
+        values.r,
+        2
+      )}R`;
+
+  }
+
+
+  const riskCheckElement =
+    document.getElementById(
+      "trade-risk-check"
+    );
+
+
+  if (riskCheckElement) {
+
+    riskCheckElement.textContent =
+      formatMoney(
+        values.riskAtStop
+      );
 
   }
 
@@ -2506,13 +3329,20 @@ function updateBEVisibility() {
   const result =
     document.getElementById(
       "trade-result"
-    ).value;
+    )?.value;
 
 
   const group =
     document.getElementById(
       "be-exit-group"
     );
+
+
+  if (!group) {
+
+    return;
+
+  }
 
 
   group.classList.toggle(
@@ -2570,7 +3400,7 @@ function updateBEVisibility() {
    ADD TRADE
 ========================================================= */
 
-tradeForm.addEventListener(
+tradeForm?.addEventListener(
   "submit",
   event => {
 
@@ -2630,6 +3460,25 @@ tradeForm.addEventListener(
       document.getElementById(
         "trade-result"
       ).value;
+
+
+    const tradeDate =
+      document.getElementById(
+        "trade-date"
+      ).value;
+
+
+    if (
+      !tradeDate
+    ) {
+
+      alert(
+        "Sélectionne une date pour le trade."
+      );
+
+      return;
+
+    }
 
 
     if (
@@ -2704,9 +3553,9 @@ tradeForm.addEventListener(
 
     const riskTolerance =
       Math.max(
-        0.01,
+        APP_CONFIG.minRiskTolerance,
         values.riskMoney *
-        0.000001
+        APP_CONFIG.maxRiskToleranceRatio
       );
 
 
@@ -2759,6 +3608,24 @@ tradeForm.addEventListener(
     }
 
 
+    if (
+      !Number.isFinite(
+        values.pnl
+      ) ||
+      !Number.isFinite(
+        values.r
+      )
+    ) {
+
+      alert(
+        "Les calculs du trade sont invalides. Vérifie les prix saisis."
+      );
+
+      return;
+
+    }
+
+
     const trade = {
 
       id:
@@ -2773,9 +3640,7 @@ tradeForm.addEventListener(
         capital.name,
 
       date:
-        document.getElementById(
-          "trade-date"
-        ).value,
+        tradeDate,
 
       asset,
 
@@ -2863,34 +3728,32 @@ tradeForm.addEventListener(
     );
 
 
-    saveJSON(
-      STORAGE_KEYS.trades,
-      trades
-    );
-
-
-    tradeForm.reset();
-
-
-    document.getElementById(
-      "trade-date"
-    ).value =
-      getDefaultDateTime();
-
-
-    document.getElementById(
-      "be-exit-group"
-    )
-      .classList.add(
-        "hidden"
+    const saved =
+      saveJSON(
+        STORAGE_KEYS.trades,
+        trades
       );
 
 
+    if (!saved) {
+
+      trades =
+        trades.filter(
+          item =>
+            item.id !==
+            trade.id
+        );
+
+      return;
+
+    }
+
+
+    resetTradeForm();
+
     closeTradeModal();
 
-
     updateAll();
-
 
     showPage(
       "journal"
@@ -2904,7 +3767,9 @@ tradeForm.addEventListener(
    TRADE DELETION
 ========================================================= */
 
-function deleteTrade(id) {
+function deleteTrade(
+  id
+) {
 
   const confirmed =
     window.confirm(
@@ -2950,7 +3815,7 @@ function getFilteredJournalTrades() {
   const filter =
     document.getElementById(
       "journal-capital-filter"
-    ).value;
+    )?.value || "all";
 
 
   if (
@@ -2998,28 +3863,49 @@ function renderJournal() {
     );
 
 
+  if (
+    !tbody
+  ) {
+
+    return;
+
+  }
+
+
   const active =
     getActiveCapital();
 
 
-  noCapital.classList.toggle(
-    "hidden",
-    Boolean(active)
-  );
+  if (noCapital) {
+
+    noCapital.classList.toggle(
+      "hidden",
+      Boolean(active)
+    );
+
+  }
 
 
   const filtered =
     getFilteredJournalTrades();
 
 
-  document.getElementById(
-    "journal-summary"
-  ).textContent =
-    `${filtered.length} trade${
-      filtered.length > 1
-        ? "s"
-        : ""
-    }`;
+  const summary =
+    document.getElementById(
+      "journal-summary"
+    );
+
+
+  if (summary) {
+
+    summary.textContent =
+      `${filtered.length} trade${
+        filtered.length > 1
+          ? "s"
+          : ""
+      }`;
+
+  }
 
 
   if (!filtered.length) {
@@ -3176,6 +4062,7 @@ function renderJournal() {
                   class="delete-button"
                   onclick="deleteTrade('${trade.id}')"
                   title="Supprimer"
+                  aria-label="Supprimer le trade"
                 >
                   ×
                 </button>
@@ -3201,7 +4088,10 @@ function formatPrice(
     Number(value);
 
 
-  if (!number) {
+  if (
+    !Number.isFinite(number) ||
+    number <= 0
+  ) {
 
     return "—";
 
@@ -3226,7 +4116,7 @@ document
   .getElementById(
     "journal-capital-filter"
   )
-  .addEventListener(
+  ?.addEventListener(
     "change",
     renderJournal
   );
@@ -3242,6 +4132,13 @@ function renderRecentTrades() {
     document.getElementById(
       "recent-trades"
     );
+
+
+  if (!tbody) {
+
+    return;
+
+  }
 
 
   if (!trades.length) {
@@ -3374,34 +4271,45 @@ function calculateStatistics(
   startingCapital = 0
 ) {
 
+  const safeTrades =
+    Array.isArray(
+      tradeList
+    )
+      ? tradeList
+      : [];
+
+
   const totalTrades =
-    tradeList.length;
+    safeTrades.length;
 
 
   const wins =
-    tradeList.filter(
+    safeTrades.filter(
       trade =>
         trade.result === "TP"
     ).length;
 
 
   const losses =
-    tradeList.filter(
+    safeTrades.filter(
       trade =>
         trade.result === "SL"
     ).length;
 
 
   const breakeven =
-    tradeList.filter(
+    safeTrades.filter(
       trade =>
         trade.result === "BE"
     ).length;
 
 
   const totalPnl =
-    tradeList.reduce(
-      (sum, trade) =>
+    safeTrades.reduce(
+      (
+        sum,
+        trade
+      ) =>
         sum +
         Number(
           trade.pnl || 0
@@ -3419,17 +4327,19 @@ function calculateStatistics(
 
   const winRate =
     wins + losses > 0
-      ? wins /
-        (
-          wins +
-          losses
+      ? (
+          wins /
+          (
+            wins +
+            losses
+          )
         ) *
         100
       : 0;
 
 
   const grossProfit =
-    tradeList
+    safeTrades
       .filter(
         trade =>
           Number(
@@ -3437,7 +4347,10 @@ function calculateStatistics(
           ) > 0
       )
       .reduce(
-        (sum, trade) =>
+        (
+          sum,
+          trade
+        ) =>
           sum +
           Number(
             trade.pnl
@@ -3448,7 +4361,7 @@ function calculateStatistics(
 
   const grossLoss =
     Math.abs(
-      tradeList
+      safeTrades
         .filter(
           trade =>
             Number(
@@ -3456,7 +4369,10 @@ function calculateStatistics(
             ) < 0
         )
         .reduce(
-          (sum, trade) =>
+          (
+            sum,
+            trade
+          ) =>
             sum +
             Number(
               trade.pnl
@@ -3477,8 +4393,11 @@ function calculateStatistics(
 
   const avgR =
     totalTrades > 0
-      ? tradeList.reduce(
-          (sum, trade) =>
+      ? safeTrades.reduce(
+          (
+            sum,
+            trade
+          ) =>
             sum +
             Number(
               trade.r || 0
@@ -3548,24 +4467,57 @@ function calculateCapitalStatistics(
 }
 
 
+/*
+  PERFORMANCE GLOBALE
+
+  Important :
+
+  Les capitaux archivés représentent des capitaux
+  distincts. On ne considère donc pas la somme de
+  leurs balances comme "la balance actuelle".
+
+  Le P&L global est la somme de tous les trades.
+
+  Le nombre de capitaux correspond au nombre de
+  capitaux enregistrés.
+
+  Le dashboard principal continue à afficher
+  uniquement le capital actif.
+*/
+
 function calculateGlobalStatistics() {
 
-  const totalInitialCapital =
-    capitals.reduce(
-      (sum, capital) =>
+  const totalPnl =
+    trades.reduce(
+      (
+        sum,
+        trade
+      ) =>
         sum +
         Number(
-          capital.initialCapital ||
-          0
+          trade.pnl || 0
         ),
       0
     );
 
 
-  return calculateStatistics(
-    trades,
-    totalInitialCapital
-  );
+  const stats =
+    calculateStatistics(
+      trades,
+      0
+    );
+
+
+  return {
+
+    ...stats,
+
+    totalPnl,
+
+    currentCapital:
+      totalPnl
+
+  };
 
 }
 
@@ -3592,16 +4544,28 @@ function updateDashboard() {
     );
 
 
-  noCapital.classList.toggle(
-    "hidden",
-    Boolean(active)
-  );
+  if (
+    noCapital
+  ) {
+
+    noCapital.classList.toggle(
+      "hidden",
+      Boolean(active)
+    );
+
+  }
 
 
-  content.classList.toggle(
-    "hidden",
-    !active
-  );
+  if (
+    content
+  ) {
+
+    content.classList.toggle(
+      "hidden",
+      !active
+    );
+
+  }
 
 
   if (!active) {
@@ -3616,122 +4580,210 @@ function updateDashboard() {
   const filter =
     document.getElementById(
       "dashboard-capital-filter"
-    ).value;
+    )?.value || "active";
 
 
-  let stats;
+  /*
+    Le capital actuel affiché reste TOUJOURS
+    celui du capital actif.
+
+    Le filtre peut influencer les statistiques
+    secondaires et l'equity curve, mais jamais
+    la balance actuelle du capital actif.
+  */
+
+  const activeStats =
+    calculateCapitalStatistics(
+      active
+    );
 
 
-  if (
+  const globalStats =
+    calculateGlobalStatistics();
+
+
+  const stats =
     filter === "all"
-  ) {
+      ? globalStats
+      : activeStats;
 
-    stats =
-      calculateGlobalStatistics();
 
-  } else {
+  const activeBalance =
+    getCapitalBalance(
+      active
+    );
 
-    stats =
-      calculateCapitalStatistics(
-        active
+
+  const activeStartingCapital =
+    Number(
+      active.initialCapital
+    ) || 0;
+
+
+  const dashboardCapital =
+    document.getElementById(
+      "dashboard-capital"
+    );
+
+
+  if (dashboardCapital) {
+
+    dashboardCapital.textContent =
+      formatMoney(
+        activeBalance
       );
 
   }
 
 
-  document.getElementById(
-    "dashboard-capital"
-  ).textContent =
-    formatMoney(
-      stats.currentCapital
+  const dashboardStartCapital =
+    document.getElementById(
+      "dashboard-start-capital"
     );
 
 
-  const dashboardStartingCapital =
+  if (dashboardStartCapital) {
+
+    dashboardStartCapital.textContent =
+      formatMoney(
+        activeStartingCapital
+      );
+
+  }
+
+
+  const pnlElement =
+    document.getElementById(
+      "dashboard-pnl"
+    );
+
+
+  if (pnlElement) {
+
+    pnlElement.textContent =
+      formatMoney(
+        stats.totalPnl
+      );
+
+  }
+
+
+  const pnlPercentElement =
+    document.getElementById(
+      "dashboard-pnl-percent"
+    );
+
+
+  const statsStartingCapital =
     filter === "all"
-      ? (
-          stats.currentCapital -
-          stats.totalPnl
-        )
-      : active.initialCapital;
-
-
-  document.getElementById(
-    "dashboard-start-capital"
-  ).textContent =
-    formatMoney(
-      dashboardStartingCapital
-    );
-
-
-  document.getElementById(
-    "dashboard-pnl"
-  ).textContent =
-    formatMoney(
-      stats.totalPnl
-    );
+      ? 0
+      : activeStartingCapital;
 
 
   const pnlPercent =
-    dashboardStartingCapital > 0
+    statsStartingCapital > 0
       ? (
           stats.totalPnl /
-          dashboardStartingCapital
+          statsStartingCapital
         ) *
         100
       : 0;
 
 
-  document.getElementById(
-    "dashboard-pnl-percent"
-  ).textContent =
-    formatPercent(
-      pnlPercent
+  if (pnlPercentElement) {
+
+    pnlPercentElement.textContent =
+      filter === "all"
+        ? "Global"
+        : formatPercent(
+            pnlPercent
+          );
+
+  }
+
+
+  const winRate =
+    document.getElementById(
+      "dashboard-winrate"
     );
 
 
-  document.getElementById(
-    "dashboard-winrate"
-  ).textContent =
-    formatPercent(
-      stats.winRate
+  if (winRate) {
+
+    winRate.textContent =
+      formatPercent(
+        stats.winRate
+      );
+
+  }
+
+
+  const wl =
+    document.getElementById(
+      "dashboard-wl"
     );
 
 
-  document.getElementById(
-    "dashboard-wl"
-  ).textContent =
-    `${stats.wins} W / ${
-      stats.losses
-    } L / ${
-      stats.breakeven
-    } BE`;
+  if (wl) {
+
+    wl.textContent =
+      `${stats.wins} W / ${
+        stats.losses
+      } L / ${
+        stats.breakeven
+      } BE`;
+
+  }
 
 
-  document.getElementById(
-    "dashboard-trades"
-  ).textContent =
-    stats.totalTrades;
+  const tradesElement =
+    document.getElementById(
+      "dashboard-trades"
+    );
 
 
-  document.getElementById(
-    "dashboard-profit-factor"
-  ).textContent =
-    stats.profitFactor === Infinity
-      ? "∞"
-      : formatNumber(
-          stats.profitFactor,
-          2
-        );
+  if (tradesElement) {
+
+    tradesElement.textContent =
+      stats.totalTrades;
+
+  }
 
 
-  document.getElementById(
-    "dashboard-avg-r"
-  ).textContent =
-    `${formatNumber(
-      stats.avgR,
-      2
-    )}R`;
+  const profitFactor =
+    document.getElementById(
+      "dashboard-profit-factor"
+    );
+
+
+  if (profitFactor) {
+
+    profitFactor.textContent =
+      stats.profitFactor === Infinity
+        ? "∞"
+        : formatNumber(
+            stats.profitFactor,
+            2
+          );
+
+  }
+
+
+  const avgR =
+    document.getElementById(
+      "dashboard-avg-r"
+    );
+
+
+  if (avgR) {
+
+    avgR.textContent =
+      `${formatNumber(
+        stats.avgR,
+        2
+      )}R`;
+
+  }
 
 
   const dashboardTrades =
@@ -3744,19 +4796,33 @@ function updateDashboard() {
         );
 
 
+  const chartStartingCapital =
+    filter === "all"
+      ? 0
+      : activeStartingCapital;
+
+
   const drawdown =
     calculateMaxDrawdown(
-      dashboardStartingCapital,
+      chartStartingCapital,
       dashboardTrades
     );
 
 
-  document.getElementById(
-    "dashboard-drawdown"
-  ).textContent =
-    formatMoney(
-      drawdown
+  const drawdownElement =
+    document.getElementById(
+      "dashboard-drawdown"
     );
+
+
+  if (drawdownElement) {
+
+    drawdownElement.textContent =
+      formatMoney(
+        drawdown
+      );
+
+  }
 
 
   updateStreak(
@@ -3766,7 +4832,7 @@ function updateDashboard() {
 
   renderEquityChart(
     dashboardTrades,
-    dashboardStartingCapital
+    chartStartingCapital
   );
 
 
@@ -3782,7 +4848,7 @@ function updateDashboard() {
 
     equityDescription.textContent =
       filter === "all"
-        ? "Evolution de tous les capitaux."
+        ? "Evolution de la performance globale."
         : `Evolution de ${active.name}.`;
 
   }
@@ -3797,7 +4863,7 @@ document
   .getElementById(
     "dashboard-capital-filter"
   )
-  .addEventListener(
+  ?.addEventListener(
     "change",
     updateDashboard
   );
@@ -3809,32 +4875,64 @@ function updateGlobalPerformance() {
     calculateGlobalStatistics();
 
 
-  document.getElementById(
-    "global-pnl"
-  ).textContent =
-    formatMoney(
-      stats.totalPnl
+  const globalPnl =
+    document.getElementById(
+      "global-pnl"
     );
 
 
-  document.getElementById(
-    "global-trades"
-  ).textContent =
-    stats.totalTrades;
-
-
-  document.getElementById(
-    "global-winrate"
-  ).textContent =
-    formatPercent(
-      stats.winRate
+  const globalTrades =
+    document.getElementById(
+      "global-trades"
     );
 
 
-  document.getElementById(
-    "global-capitals"
-  ).textContent =
-    capitals.length;
+  const globalWinrate =
+    document.getElementById(
+      "global-winrate"
+    );
+
+
+  const globalCapitals =
+    document.getElementById(
+      "global-capitals"
+    );
+
+
+  if (globalPnl) {
+
+    globalPnl.textContent =
+      formatMoney(
+        stats.totalPnl
+      );
+
+  }
+
+
+  if (globalTrades) {
+
+    globalTrades.textContent =
+      stats.totalTrades;
+
+  }
+
+
+  if (globalWinrate) {
+
+    globalWinrate.textContent =
+      formatPercent(
+        stats.winRate
+      );
+
+  }
+
+
+  if (globalCapitals) {
+
+    globalCapitals.textContent =
+      capitals.length;
+
+  }
 
 }
 
@@ -3849,7 +4947,13 @@ function calculateMaxDrawdown(
 ) {
 
   const ordered =
-    [...tradeList].sort(
+    [...(
+      Array.isArray(
+        tradeList
+      )
+        ? tradeList
+        : []
+    )].sort(
       (a, b) =>
         new Date(a.date) -
         new Date(b.date)
@@ -3933,7 +5037,19 @@ function updateStreak(
     );
 
 
-  if (!tradeList.length) {
+  if (
+    !element ||
+    !label
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !tradeList.length
+  ) {
 
     element.textContent =
       "0";
@@ -4065,6 +5181,13 @@ function renderEquityChart(
     );
 
 
+  if (!container) {
+
+    return;
+
+  }
+
+
   if (!tradeList.length) {
 
     container.innerHTML =
@@ -4152,7 +5275,10 @@ function renderEquityChart(
   const coordinates =
     points
       .map(
-        (point, index) => {
+        (
+          point,
+          index
+        ) => {
 
           const x =
             points.length === 1
@@ -4192,7 +5318,9 @@ function renderEquityChart(
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         width="100%"
-        height="220"
+        height="${APP_CONFIG.chartHeight}"
+        role="img"
+        aria-label="Courbe d'évolution de l'équité"
       >
 
         <polyline
@@ -4210,67 +5338,59 @@ function renderEquityChart(
 
 
 /* =========================================================
-   PLAN DE TRADING - NOUVELLE CHECKLIST
+   PLAN DE TRADING
 ========================================================= */
 
-/*
-  Le nouveau index.html utilise une checklist
-  basée sur :
-
-  data-plan-check="fundamental"
-  data-plan-check="usdBias"
-  etc.
-
-  L'ancien système utilisait :
-
-  plan-strategy
-  plan-entry
-  plan-exit
-  plan-risk
-  plan-min-rr
-  check-trend
-  check-setup
-  check-risk
-  check-news
-  check-emotion
-
-  Ces anciens éléments n'existent plus.
-
-  IMPORTANT :
-
-  On ne tente donc plus de lire des éléments
-  qui n'existent pas dans le DOM.
-
-  Cela empêchait auparavant l'application
-  d'atteindre updateAll() au chargement.
-*/
-
-
 const PLAN_CHECKLIST_KEYS = [
+
   "fundamental",
+
   "usdBias",
+
   "h4",
+
   "h4Trend",
+
   "phase",
+
   "m15",
+
   "m15Structure",
+
   "zone",
+
   "validZone",
+
   "zoneContext",
+
   "returnZone",
+
   "reaction",
+
   "m1",
+
   "shift",
+
   "fvg",
+
   "entry",
+
   "risk",
+
   "lot",
+
   "sl",
+
   "tp",
+
   "rr",
+
   "noFomo",
+
   "noSlMove",
+
   "fullPlan"
+
 ];
 
 
@@ -4299,7 +5419,9 @@ function getPlanChecklistState() {
 
 
         if (!key) {
+
           return;
+
         }
 
 
@@ -4328,7 +5450,9 @@ function applyPlanChecklistState(
 
 
         if (!key) {
+
           return;
+
         }
 
 
@@ -4416,6 +5540,13 @@ function updatePlanChecklistProgress() {
       allCompleted
     );
 
+
+    permission.classList.toggle(
+      "authorized",
+      allCompleted
+    );
+
+
     permission.classList.toggle(
       "blocked",
       !allCompleted
@@ -4462,10 +5593,6 @@ function loadPlanIntoForm() {
     loadPlan();
 
 
-  /*
-    Nouveau système de checklist.
-  */
-
   if (
     plan &&
     plan.checklist
@@ -4476,12 +5603,6 @@ function loadPlanIntoForm() {
     );
 
   } else {
-
-    /*
-      Compatibilité avec une éventuelle
-      ancienne sauvegarde contenant directement
-      les clés de checklist.
-    */
 
     applyPlanChecklistState(
       plan
@@ -4509,22 +5630,28 @@ function saveCurrentPlan() {
       getPlanChecklistState(),
 
     updatedAt:
-      new Date().toISOString()
+      new Date().toISOString(),
+
+    appVersion:
+      APP_CONFIG.version
 
   };
 
 
-  savePlan(
-    plan
-  );
+  if (
+    savePlan(
+      plan
+    )
+  ) {
+
+    updatePlanChecklistProgress();
 
 
-  updatePlanChecklistProgress();
+    alert(
+      "Plan de trading sauvegardé."
+    );
 
-
-  alert(
-    "Plan de trading sauvegardé."
-  );
+  }
 
 }
 
@@ -4603,6 +5730,51 @@ getPlanChecklistElements()
 
 
 /* =========================================================
+   KEYBOARD / ACCESSIBILITY
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key !==
+      "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      tradeModal?.classList.contains(
+        "active"
+      )
+    ) {
+
+      closeTradeModal();
+
+      return;
+
+    }
+
+
+    if (
+      capitalModal?.classList.contains(
+        "active"
+      )
+    ) {
+
+      closeCapitalModal();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
    UPDATE ALL
 ========================================================= */
 
@@ -4650,7 +5822,7 @@ function setCurrentDate() {
 
   element.textContent =
     date.toLocaleDateString(
-      "fr-FR",
+      APP_CONFIG.locale,
       {
         weekday: "long",
         day: "numeric",
@@ -4663,18 +5835,217 @@ function setCurrentDate() {
 
 
 /* =========================================================
-   INITIALIZATION
+   DATA VALIDATION / NORMALIZATION
 ========================================================= */
 
-/*
-  Les scripts sont actuellement placés à la fin
-  du body dans index.html.
+function normalizeLoadedData() {
 
-  On recharge néanmoins explicitement les données
-  depuis localStorage avant le premier rendu afin
-  d'éviter qu'un état mémoire ancien ou incomplet
-  ne soit utilisé.
-*/
+  if (
+    !Array.isArray(
+      trades
+    )
+  ) {
+
+    trades = [];
+
+  }
+
+
+  if (
+    !Array.isArray(
+      capitals
+    )
+  ) {
+
+    capitals = [];
+
+  }
+
+
+  trades =
+    trades.filter(
+      trade =>
+        trade &&
+        typeof trade ===
+        "object"
+    );
+
+
+  capitals =
+    capitals.filter(
+      capital =>
+        capital &&
+        typeof capital ===
+        "object"
+    );
+
+
+  /*
+    Compatibilité avec les données qui pourraient
+    avoir été créées avant la V3.
+  */
+
+  capitals.forEach(
+    capital => {
+
+      if (!capital.id) {
+
+        capital.id =
+          createId(
+            "capital-"
+          );
+
+      }
+
+
+      if (
+        capital.status !==
+          "active" &&
+        capital.status !==
+          "archived"
+      ) {
+
+        capital.status =
+          "archived";
+
+      }
+
+
+      if (
+        !capital.riskMode
+      ) {
+
+        capital.riskMode =
+          "percentage";
+
+      }
+
+
+      if (
+        !Number.isFinite(
+          Number(
+            capital.riskPercent
+          )
+        )
+      ) {
+
+        capital.riskPercent =
+          1;
+
+      }
+
+
+      if (
+        !Number.isFinite(
+          Number(
+            capital.riskAmount
+          )
+        )
+      ) {
+
+        capital.riskAmount =
+          0;
+
+      }
+
+
+      if (
+        !Number.isFinite(
+          Number(
+            capital.defaultRR
+          )
+        )
+      ) {
+
+        capital.defaultRR =
+          2;
+
+      }
+
+    }
+  );
+
+
+  trades.forEach(
+    trade => {
+
+      if (!trade.id) {
+
+        trade.id =
+          createId(
+            "trade-"
+          );
+
+      }
+
+
+      if (
+        !Number.isFinite(
+          Number(
+            trade.pnl
+          )
+        )
+      ) {
+
+        trade.pnl =
+          0;
+
+      }
+
+
+      if (
+        !Number.isFinite(
+          Number(
+            trade.r
+          )
+        )
+      ) {
+
+        trade.r =
+          0;
+
+      }
+
+
+      if (
+        !Number.isFinite(
+          Number(
+            trade.lot
+          )
+        )
+      ) {
+
+        trade.lot =
+          0;
+
+      }
+
+    }
+  );
+
+
+  ensureSingleActiveCapital();
+
+  ensureActiveCapitalIfPossible();
+
+
+  saveJSON(
+    STORAGE_KEYS.trades,
+    trades
+  );
+
+
+  saveJSON(
+    STORAGE_KEYS.capitals,
+    capitals
+  );
+
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
 
 function refreshDataFromStorage() {
 
@@ -4692,22 +6063,7 @@ function refreshDataFromStorage() {
     );
 
 
-  if (
-    !Array.isArray(trades)
-  ) {
-
-    trades = [];
-
-  }
-
-
-  if (
-    !Array.isArray(capitals)
-  ) {
-
-    capitals = [];
-
-  }
+  normalizeLoadedData();
 
 }
 
@@ -4716,9 +6072,12 @@ function initializeApplication() {
 
   refreshDataFromStorage();
 
+  initializeStorageMetadata();
+
   setCurrentDate();
 
   loadPlanIntoForm();
+
 
   const tradeDate =
     document.getElementById(
@@ -4736,16 +6095,25 @@ function initializeApplication() {
 
   updateAll();
 
+
+  /*
+    Le Dashboard est la page par défaut.
+  */
+
+  showPage(
+    "dashboard"
+  );
+
 }
 
 
 /*
-  Le DOM est normalement déjà disponible
-  puisque app.js est chargé en bas du body.
+  Le script est normalement chargé à la fin
+  du body.
 
-  Cette sécurité permet néanmoins au script
-  de fonctionner correctement même si sa position
-  venait à changer dans index.html.
+  Cette sécurité permet néanmoins à l'application
+  de fonctionner correctement si la position du
+  script change plus tard.
 */
 
 if (
