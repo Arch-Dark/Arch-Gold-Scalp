@@ -38,13 +38,6 @@
   BUY  = (Sortie - Entrée) × 100
   SELL = (Entrée - Sortie) × 100
 
-  Exemple :
-
-  2000.00 → 2005.00
-  Variation = 5.00 $
-  Pips = 5 × 100
-       = +500 pips
-
   ==========================================================
 
   FOREX NON-JPY
@@ -88,31 +81,66 @@ const STORAGE_KEYS = {
 
 
 function loadJSON(key, fallback = []) {
+
   try {
-    const value = JSON.parse(localStorage.getItem(key));
+
+    const value =
+      JSON.parse(
+        localStorage.getItem(key)
+      );
+
     return value ?? fallback;
+
   } catch {
+
     return fallback;
+
   }
+
 }
 
 
 function saveJSON(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(value)
+  );
+
 }
 
 
-let trades = loadJSON(STORAGE_KEYS.trades, []);
-let capitals = loadJSON(STORAGE_KEYS.capitals, []);
+let trades =
+  loadJSON(
+    STORAGE_KEYS.trades,
+    []
+  );
+
+
+let capitals =
+  loadJSON(
+    STORAGE_KEYS.capitals,
+    []
+  );
 
 
 function loadPlan() {
-  return loadJSON(STORAGE_KEYS.plan, {});
+
+  return loadJSON(
+    STORAGE_KEYS.plan,
+    {}
+  );
+
 }
 
 
 function savePlan(plan) {
-  saveJSON(STORAGE_KEYS.plan, plan);
+
+  saveJSON(
+    STORAGE_KEYS.plan,
+    plan
+  );
+
 }
 
 
@@ -120,26 +148,52 @@ function savePlan(plan) {
    DOM
 ========================================================= */
 
-const pages = document.querySelectorAll(".page");
-const navButtons = document.querySelectorAll(".nav-button");
+const pages =
+  document.querySelectorAll(
+    ".page"
+  );
+
+
+const navButtons =
+  document.querySelectorAll(
+    ".nav-button"
+  );
+
 
 const pageTitle =
-  document.getElementById("page-title");
+  document.getElementById(
+    "page-title"
+  );
+
 
 const pageDescription =
-  document.getElementById("page-description");
+  document.getElementById(
+    "page-description"
+  );
+
 
 const tradeModal =
-  document.getElementById("trade-modal");
+  document.getElementById(
+    "trade-modal"
+  );
+
 
 const tradeForm =
-  document.getElementById("trade-form");
+  document.getElementById(
+    "trade-form"
+  );
+
 
 const capitalModal =
-  document.getElementById("capital-modal");
+  document.getElementById(
+    "capital-modal"
+  );
+
 
 const capitalForm =
-  document.getElementById("capital-form");
+  document.getElementById(
+    "capital-form"
+  );
 
 
 /* =========================================================
@@ -151,26 +205,37 @@ function formatMoney(value) {
   const number =
     Number(value) || 0;
 
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(number);
+
+  return new Intl.NumberFormat(
+    "en-US",
+    {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  ).format(number);
 
 }
 
 
 function formatPercent(value) {
 
-  return `${(Number(value) || 0).toFixed(2)}%`;
+  return `${(
+    Number(value) || 0
+  ).toFixed(2)}%`;
 
 }
 
 
-function formatNumber(value, decimals = 2) {
+function formatNumber(
+  value,
+  decimals = 2
+) {
 
-  return (Number(value) || 0).toFixed(decimals);
+  return (
+    Number(value) || 0
+  ).toFixed(decimals);
 
 }
 
@@ -178,11 +243,26 @@ function formatNumber(value, decimals = 2) {
 function escapeHTML(value) {
 
   return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
@@ -193,12 +273,21 @@ function formatDate(dateString) {
     return "—";
   }
 
+
   const date =
     new Date(dateString);
 
-  if (Number.isNaN(date.getTime())) {
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
     return "—";
+
   }
+
 
   return date.toLocaleDateString(
     "fr-FR",
@@ -217,8 +306,11 @@ function getDefaultDateTime() {
   const now =
     new Date();
 
+
   const offset =
-    now.getTimezoneOffset() * 60000;
+    now.getTimezoneOffset() *
+    60000;
+
 
   return new Date(
     now.getTime() - offset
@@ -278,14 +370,26 @@ const pageInformation = {
 
 function showPage(pageName) {
 
-  pages.forEach(page => {
-    page.classList.remove("active");
-  });
+  pages.forEach(
+    page => {
+
+      page.classList.remove(
+        "active"
+      );
+
+    }
+  );
 
 
-  navButtons.forEach(button => {
-    button.classList.remove("active");
-  });
+  navButtons.forEach(
+    button => {
+
+      button.classList.remove(
+        "active"
+      );
+
+    }
+  );
 
 
   const page =
@@ -301,22 +405,45 @@ function showPage(pageName) {
 
 
   if (page) {
-    page.classList.add("active");
+
+    page.classList.add(
+      "active"
+    );
+
   }
 
 
   if (button) {
-    button.classList.add("active");
+
+    button.classList.add(
+      "active"
+    );
+
   }
 
 
-  if (pageInformation[pageName]) {
+  if (
+    pageInformation[pageName]
+  ) {
 
-    pageTitle.textContent =
-      pageInformation[pageName].title;
+    if (pageTitle) {
 
-    pageDescription.textContent =
-      pageInformation[pageName].description;
+      pageTitle.textContent =
+        pageInformation[
+          pageName
+        ].title;
+
+    }
+
+
+    if (pageDescription) {
+
+      pageDescription.textContent =
+        pageInformation[
+          pageName
+        ].description;
+
+    }
 
   }
 
@@ -329,32 +456,44 @@ function showPage(pageName) {
 }
 
 
-navButtons.forEach(button => {
-
-  button.addEventListener(
-    "click",
-    () => {
-      showPage(button.dataset.page);
-    }
-  );
-
-});
-
-
-document
-  .querySelectorAll("[data-page-button]")
-  .forEach(button => {
+navButtons.forEach(
+  button => {
 
     button.addEventListener(
       "click",
       () => {
+
         showPage(
-          button.dataset.pageButton
+          button.dataset.page
         );
+
       }
     );
 
-  });
+  }
+);
+
+
+document
+  .querySelectorAll(
+    "[data-page-button]"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          showPage(
+            button.dataset.pageButton
+          );
+
+        }
+      );
+
+    }
+  );
 
 
 /* =========================================================
@@ -388,7 +527,9 @@ function getCapitalById(id) {
 function getCapitalBalance(capital) {
 
   if (!capital) {
+
     return 0;
+
   }
 
 
@@ -396,7 +537,8 @@ function getCapitalBalance(capital) {
     trades
       .filter(
         trade =>
-          trade.capitalId === capital.id
+          trade.capitalId ===
+          capital.id
       )
       .sort(
         (a, b) =>
@@ -406,10 +548,15 @@ function getCapitalBalance(capital) {
 
 
   return (
-    Number(capital.initialCapital) +
+    Number(
+      capital.initialCapital
+    ) +
     capitalTrades.reduce(
       (sum, trade) =>
-        sum + Number(trade.pnl || 0),
+        sum +
+        Number(
+          trade.pnl || 0
+        ),
       0
     )
   );
@@ -432,19 +579,28 @@ function getCapitalBalance(capital) {
 function getCapitalRisk(capital) {
 
   if (!capital) {
+
     return 0;
+
   }
 
 
   const balance =
-    getCapitalBalance(capital);
+    getCapitalBalance(
+      capital
+    );
 
 
-  if (capital.riskMode === "fixed") {
+  if (
+    capital.riskMode ===
+    "fixed"
+  ) {
 
     return Math.max(
       0,
-      Number(capital.riskAmount) || 0
+      Number(
+        capital.riskAmount
+      ) || 0
     );
 
   }
@@ -453,40 +609,61 @@ function getCapitalRisk(capital) {
   return Math.max(
     0,
     balance *
-      (Number(capital.riskPercent) || 0) /
+      (
+        Number(
+          capital.riskPercent
+        ) || 0
+      ) /
       100
   );
 
 }
 
 
-function getCapitalRiskPercent(capital) {
+function getCapitalRiskPercent(
+  capital
+) {
 
   if (!capital) {
+
     return 0;
+
   }
 
 
-  if (capital.riskMode === "percentage") {
+  if (
+    capital.riskMode ===
+    "percentage"
+  ) {
 
     return (
-      Number(capital.riskPercent) || 0
+      Number(
+        capital.riskPercent
+      ) || 0
     );
 
   }
 
 
   const balance =
-    getCapitalBalance(capital);
+    getCapitalBalance(
+      capital
+    );
 
 
-  if (balance <= 0) {
+  if (
+    balance <= 0
+  ) {
+
     return 0;
+
   }
 
 
   return (
-    Number(capital.riskAmount || 0) /
+    Number(
+      capital.riskAmount || 0
+    ) /
     balance
   ) * 100;
 
@@ -502,16 +679,25 @@ function ensureSingleActiveCapital() {
     );
 
 
-  if (active.length <= 1) {
+  if (
+    active.length <= 1
+  ) {
+
     return;
+
   }
 
 
   active
     .slice(1)
-    .forEach(capital => {
-      capital.status = "archived";
-    });
+    .forEach(
+      capital => {
+
+        capital.status =
+          "archived";
+
+      }
+    );
 
 
   saveJSON(
@@ -522,9 +708,13 @@ function ensureSingleActiveCapital() {
 }
 
 
-function openCapitalModal(capital = null) {
+function openCapitalModal(
+  capital = null
+) {
 
-  capitalModal.classList.add("active");
+  capitalModal.classList.add(
+    "active"
+  );
 
 
   document.getElementById(
@@ -627,17 +817,23 @@ function updateCapitalRiskMode() {
 
 
 document
-  .getElementById("open-capital-modal")
+  .getElementById(
+    "open-capital-modal"
+  )
   .addEventListener(
     "click",
     () => {
+
       openCapitalModal();
+
     }
   );
 
 
 document
-  .getElementById("close-capital-modal")
+  .getElementById(
+    "close-capital-modal"
+  )
   .addEventListener(
     "click",
     closeCapitalModal
@@ -645,7 +841,9 @@ document
 
 
 document
-  .getElementById("cancel-capital")
+  .getElementById(
+    "cancel-capital"
+  )
   .addEventListener(
     "click",
     closeCapitalModal
@@ -653,7 +851,9 @@ document
 
 
 document
-  .getElementById("capital-risk-mode")
+  .getElementById(
+    "capital-risk-mode"
+  )
   .addEventListener(
     "change",
     updateCapitalRiskMode
@@ -664,8 +864,13 @@ capitalModal.addEventListener(
   "click",
   event => {
 
-    if (event.target === capitalModal) {
+    if (
+      event.target ===
+      capitalModal
+    ) {
+
       closeCapitalModal();
+
     }
 
   }
@@ -736,11 +941,14 @@ capitalForm.addEventListener(
       );
 
       return;
+
     }
 
 
     if (
-      !Number.isFinite(initialCapital) ||
+      !Number.isFinite(
+        initialCapital
+      ) ||
       initialCapital <= 0
     ) {
 
@@ -749,11 +957,13 @@ capitalForm.addEventListener(
       );
 
       return;
+
     }
 
 
     if (
-      riskMode === "percentage" &&
+      riskMode ===
+      "percentage" &&
       riskPercent <= 0
     ) {
 
@@ -762,6 +972,7 @@ capitalForm.addEventListener(
       );
 
       return;
+
     }
 
 
@@ -775,6 +986,7 @@ capitalForm.addEventListener(
       );
 
       return;
+
     }
 
 
@@ -785,7 +997,9 @@ capitalForm.addEventListener(
 
 
       if (!capital) {
+
         return;
+
       }
 
 
@@ -818,7 +1032,9 @@ capitalForm.addEventListener(
       const capital = {
 
         id:
-          createId("capital-"),
+          createId(
+            "capital-"
+          ),
 
         name,
 
@@ -883,7 +1099,9 @@ function editCapital(id) {
 
 
   if (!capital) {
+
     return;
+
   }
 
 
@@ -901,14 +1119,19 @@ function archiveCapital(id) {
 
 
   if (!capital) {
+
     return;
+
   }
 
 
   if (
-    capital.status !== "active"
+    capital.status !==
+    "active"
   ) {
+
     return;
+
   }
 
 
@@ -934,16 +1157,22 @@ function activateCapital(id) {
 
 
   if (!capital) {
+
     return;
+
   }
 
 
   capitals.forEach(
     item => {
 
-      if (item.id !== id) {
+      if (
+        item.id !== id
+      ) {
+
         item.status =
           "archived";
+
       }
 
     }
@@ -972,18 +1201,23 @@ function deleteCapital(id) {
 
 
   if (!capital) {
+
     return;
+
   }
 
 
   const linkedTrades =
     trades.filter(
       trade =>
-        trade.capitalId === id
+        trade.capitalId ===
+        id
     );
 
 
-  if (linkedTrades.length > 0) {
+  if (
+    linkedTrades.length > 0
+  ) {
 
     alert(
       "Ce capital possède des trades enregistrés. " +
@@ -991,6 +1225,7 @@ function deleteCapital(id) {
     );
 
     return;
+
   }
 
 
@@ -1001,7 +1236,9 @@ function deleteCapital(id) {
 
 
   if (!confirmed) {
+
     return;
+
   }
 
 
@@ -1061,7 +1298,8 @@ function renderCapitals() {
   const archived =
     capitals.filter(
       capital =>
-        capital.status === "archived"
+        capital.status ===
+        "archived"
     );
 
 
@@ -1121,7 +1359,9 @@ function renderCapitals() {
   ).textContent =
     active
       ? formatMoney(
-          getCapitalBalance(active)
+          getCapitalBalance(
+            active
+          )
         )
       : "$0.00";
 
@@ -1306,49 +1546,8 @@ function renderCapitalItem(
    ASSET / PIP CONFIGURATION
 ========================================================= */
 
-/*
-  LOT_STEP
-
-  Le calcul peut produire une taille très précise.
-
-  Exemple :
-    0.203847...
-
-  Comme le journal utilise des tailles de lot
-  par incrément de 0.01, on arrondit vers le bas.
-
-  Pourquoi vers le bas ?
-
-  Pour ne JAMAIS dépasser le risque maximum
-  défini par le capital.
-
-  Exemple :
-
-    Risque autorisé = $100
-    Lot théorique   = 0.2038
-
-    Lot utilisé     = 0.20
-
-  Le risque réel sera inférieur ou égal
-  au risque maximum.
-*/
-
 const LOT_STEP = 0.01;
 
-
-/*
-  Configuration des instruments.
-
-  pipMultiplier :
-
-  Gold  : 100
-  JPY   : 100
-  Forex : 10000
-
-  pipValue :
-
-  Valeur d'un pip pour 1.00 lot.
-*/
 
 const ASSET_CONFIG = {
 
@@ -1419,13 +1618,6 @@ const ASSET_CONFIG = {
 };
 
 
-/*
-  Normalisation du lot.
-
-  On arrondit vers le bas au pas de 0.01
-  afin de ne jamais dépasser le risque demandé.
-*/
-
 function normalizeLot(lot) {
 
   const numericLot =
@@ -1459,20 +1651,6 @@ function normalizeLot(lot) {
 }
 
 
-/*
-  Distance en pips.
-
-  Cette fonction retourne une distance POSITIVE.
-
-  Elle est utilisée pour le calcul du lot.
-
-  Exemple Gold :
-
-    2000 → 1995
-    |2000 - 1995| × 100
-    = 500 pips
-*/
-
 function getPipDistance(
   asset,
   price1,
@@ -1484,12 +1662,15 @@ function getPipDistance(
 
 
   if (!config) {
+
     return 0;
+
   }
 
 
   const p1 =
     Number(price1) || 0;
+
 
   const p2 =
     Number(price2) || 0;
@@ -1507,26 +1688,11 @@ function getPipDistance(
 
   return Math.abs(
     p1 - p2
-  ) * config.multiplier;
+  ) *
+  config.multiplier;
 
 }
 
-
-/*
-  Pips SIGNÉS.
-
-  Cette fonction est utilisée pour le résultat du trade.
-
-  BUY :
-
-    sortie > entrée = gain
-    sortie < entrée = perte
-
-  SELL :
-
-    sortie < entrée = gain
-    sortie > entrée = perte
-*/
 
 function getSignedPips(
   asset,
@@ -1540,12 +1706,15 @@ function getSignedPips(
 
 
   if (!config) {
+
     return 0;
+
   }
 
 
   const entryPrice =
     Number(entry) || 0;
+
 
   const exitPrice =
     Number(exit) || 0;
@@ -1583,41 +1752,6 @@ function getSignedPips(
 }
 
 
-/*
-  Valeur d'un pip pour 1 LOT.
-
-  GOLD :
-
-    1.00 lot = $1 / pip
-
-  EURUSD / GBPUSD / AUDUSD / NZDUSD :
-
-    1.00 lot = $10 / pip
-
-  USDJPY :
-
-    1 pip = 1000 JPY pour 1 lot
-    conversion en USD :
-    1000 / USDJPY
-
-  USDCAD :
-
-    1 pip = 10 CAD pour 1 lot
-    conversion en USD :
-    10 / USDCAD
-
-  USDCHF :
-
-    1 pip = 10 CHF pour 1 lot
-    conversion en USD :
-    10 × USDCHF
-
-  Important :
-
-  Ces valeurs sont utilisées avec le prix
-  d'entrée pour déterminer la taille de position.
-*/
-
 function getPipValue(
   asset,
   price
@@ -1628,14 +1762,20 @@ function getPipValue(
 
 
   if (!config) {
+
     return 0;
+
   }
 
 
-  if (!config.dynamicPipValue) {
+  if (
+    !config.dynamicPipValue
+  ) {
 
     return (
-      Number(config.pipValue) || 0
+      Number(
+        config.pipValue
+      ) || 0
     );
 
   }
@@ -1695,19 +1835,6 @@ function getPipValue(
 }
 
 
-/*
-  Valeur d'un pip pour le LOT réellement utilisé.
-
-  Exemple Gold :
-
-    lot = 0.20
-    pipValuePerLot = $1
-
-    valeur réelle =
-    $1 × 0.20
-    = $0.20 / pip
-*/
-
 function getActualPipValue(
   asset,
   price,
@@ -1730,16 +1857,6 @@ function getActualPipValue(
 
 }
 
-
-/*
-  Risque théorique au SL.
-
-  C'est la vérification principale :
-
-    SL pips × valeur pip × lot
-
-  Le résultat doit être <= au risque autorisé.
-*/
 
 function calculateRiskAtStop(
   asset,
@@ -1799,6 +1916,7 @@ function openTradeModal() {
 
 
     return;
+
   }
 
 
@@ -1823,7 +1941,9 @@ function openTradeModal() {
     "trade-balance-display"
   ).textContent =
     formatMoney(
-      getCapitalBalance(active)
+      getCapitalBalance(
+        active
+      )
     );
 
 
@@ -1831,7 +1951,9 @@ function openTradeModal() {
     "trade-risk-display"
   ).textContent =
     formatMoney(
-      getCapitalRisk(active)
+      getCapitalRisk(
+        active
+      )
     );
 
 
@@ -1913,7 +2035,8 @@ tradeModal.addEventListener(
   event => {
 
     if (
-      event.target === tradeModal
+      event.target ===
+      tradeModal
     ) {
 
       closeTradeModal();
@@ -2019,31 +2142,11 @@ function calculateTradeValues() {
   }
 
 
-  /*
-    ========================================================
-    1. RISQUE DU CAPITAL
-    ========================================================
-  */
-
   const riskMoney =
     getCapitalRisk(
       capital
     );
 
-
-  /*
-    ========================================================
-    2. DISTANCE ENTRE ENTRÉE ET SL
-    ========================================================
-
-    La distance est toujours positive.
-
-    Exemple Gold :
-
-      2000 → 1995
-      = 5 $
-      = 500 pips
-  */
 
   const slPips =
     getPipDistance(
@@ -2053,39 +2156,12 @@ function calculateTradeValues() {
     );
 
 
-  /*
-    ========================================================
-    3. VALEUR DU PIP POUR 1 LOT
-    ========================================================
-  */
-
   const pipValuePerLot =
     getPipValue(
       asset,
       entry
     );
 
-
-  /*
-    ========================================================
-    4. LOT THÉORIQUE
-    ========================================================
-
-    FORMULE :
-
-    Lot =
-      Risque $
-      /
-      (SL pips × valeur pip / lot)
-
-    Exemple Gold :
-
-      $100
-      /
-      (500 × $1)
-
-      = 0.20 lot
-  */
 
   let lotRaw = 0;
 
@@ -2106,28 +2182,11 @@ function calculateTradeValues() {
   }
 
 
-  /*
-    ========================================================
-    5. LOT UTILISÉ
-    ========================================================
-
-    On arrondit vers le bas à 0.01 lot.
-
-    Cela garantit que le risque ne dépasse
-    jamais le risque défini.
-  */
-
   const lot =
     normalizeLot(
       lotRaw
     );
 
-
-  /*
-    ========================================================
-    6. RISQUE RÉEL AU SL
-    ========================================================
-  */
 
   const riskAtStop =
     calculateRiskAtStop(
@@ -2152,12 +2211,6 @@ function calculateTradeValues() {
         100
       : 0;
 
-
-  /*
-    ========================================================
-    7. TP AUTOMATIQUE
-    ========================================================
-  */
 
   let tp = 0;
 
@@ -2196,12 +2249,6 @@ function calculateTradeValues() {
   }
 
 
-  /*
-    ========================================================
-    8. PRIX DE SORTIE
-    ========================================================
-  */
-
   let exitPrice = 0;
 
 
@@ -2235,22 +2282,6 @@ function calculateTradeValues() {
   }
 
 
-  /*
-    ========================================================
-    9. PIPS RÉALISÉS
-    ========================================================
-
-    BUY :
-
-      sortie > entrée = positif
-      sortie < entrée = négatif
-
-    SELL :
-
-      sortie < entrée = positif
-      sortie > entrée = négatif
-  */
-
   const realizedPips =
     getSignedPips(
       asset,
@@ -2260,28 +2291,11 @@ function calculateTradeValues() {
     );
 
 
-  /*
-    ========================================================
-    10. P&L
-    ========================================================
-
-    P&L =
-      pips réalisés
-      × valeur pip / lot
-      × lot
-  */
-
   const pnl =
     realizedPips *
     pipValuePerLot *
     lot;
 
-
-  /*
-    ========================================================
-    11. R
-    ========================================================
-  */
 
   const r =
     riskMoney > 0
@@ -2430,20 +2444,15 @@ function updateTradeCalculations() {
     )}R`;
 
 
-  /*
-    Affichage éventuel de la vérification du risque.
-
-    L'élément n'est pas obligatoire dans le HTML.
-    S'il existe, on le met à jour.
-  */
-
   const riskCheckElement =
     document.getElementById(
       "trade-risk-check"
     );
 
 
-  if (riskCheckElement) {
+  if (
+    riskCheckElement
+  ) {
 
     riskCheckElement.textContent =
       formatMoney(
@@ -2530,7 +2539,16 @@ function updateBEVisibility() {
   id => {
 
     const element =
-      document.getElementById(id);
+      document.getElementById(
+        id
+      );
+
+
+    if (!element) {
+
+      return;
+
+    }
 
 
     element.addEventListener(
@@ -2572,6 +2590,7 @@ tradeForm.addEventListener(
       closeTradeModal();
 
       return;
+
     }
 
 
@@ -2613,12 +2632,6 @@ tradeForm.addEventListener(
       ).value;
 
 
-    /*
-      ======================================================
-      VALIDATION DE BASE
-      ======================================================
-    */
-
     if (
       !entry ||
       entry <= 0 ||
@@ -2631,22 +2644,9 @@ tradeForm.addEventListener(
       );
 
       return;
+
     }
 
-
-    /*
-      ======================================================
-      VALIDATION DU CÔTÉ DU STOP LOSS
-      ======================================================
-
-      BUY :
-
-        SL doit être inférieur à l'entrée.
-
-      SELL :
-
-        SL doit être supérieur à l'entrée.
-    */
 
     if (
       direction === "BUY" &&
@@ -2658,6 +2658,7 @@ tradeForm.addEventListener(
       );
 
       return;
+
     }
 
 
@@ -2671,14 +2672,9 @@ tradeForm.addEventListener(
       );
 
       return;
+
     }
 
-
-    /*
-      ======================================================
-      VALIDATION DE LA DISTANCE
-      ======================================================
-    */
 
     if (
       values.slPips <= 0
@@ -2689,14 +2685,9 @@ tradeForm.addEventListener(
       );
 
       return;
+
     }
 
-
-    /*
-      ======================================================
-      VALIDATION DU LOT
-      ======================================================
-    */
 
     if (
       values.lot <= 0
@@ -2707,19 +2698,9 @@ tradeForm.addEventListener(
       );
 
       return;
+
     }
 
-
-    /*
-      ======================================================
-      VALIDATION DU RISQUE
-      ======================================================
-
-      Le risque réel doit rester inférieur ou égal
-      au risque autorisé.
-
-      Une très petite différence numérique est acceptée.
-    */
 
     const riskTolerance =
       Math.max(
@@ -2740,14 +2721,9 @@ tradeForm.addEventListener(
       );
 
       return;
+
     }
 
-
-    /*
-      ======================================================
-      BE
-      ======================================================
-    */
 
     if (
       result === "BE" &&
@@ -2762,14 +2738,9 @@ tradeForm.addEventListener(
       );
 
       return;
+
     }
 
-
-    /*
-      ======================================================
-      TP / SL
-      ======================================================
-    */
 
     if (
       (
@@ -2784,19 +2755,16 @@ tradeForm.addEventListener(
       );
 
       return;
+
     }
 
-
-    /*
-      ======================================================
-      TRADE
-      ======================================================
-    */
 
     const trade = {
 
       id:
-        createId("trade-"),
+        createId(
+          "trade-"
+        ),
 
       capitalId:
         capital.id,
@@ -2844,12 +2812,6 @@ tradeForm.addEventListener(
 
       lot:
         values.lot,
-
-      /*
-        On conserve également le lot théorique
-        pour garder une trace du calcul avant
-        normalisation à 0.01.
-      */
 
       lotRaw:
         values.lotRaw,
@@ -2951,7 +2913,9 @@ function deleteTrade(id) {
 
 
   if (!confirmed) {
+
     return;
+
   }
 
 
@@ -2998,7 +2962,9 @@ function getFilteredJournalTrades() {
 
 
     if (!active) {
+
       return [];
+
     }
 
 
@@ -3067,6 +3033,7 @@ function renderJournal() {
     `;
 
     return;
+
   }
 
 
@@ -3235,7 +3202,9 @@ function formatPrice(
 
 
   if (!number) {
+
     return "—";
+
   }
 
 
@@ -3286,6 +3255,7 @@ function renderRecentTrades() {
     `;
 
     return;
+
   }
 
 
@@ -3441,7 +3411,9 @@ function calculateStatistics(
 
 
   const currentCapital =
-    Number(startingCapital) +
+    Number(
+      startingCapital
+    ) +
     totalPnl;
 
 
@@ -3637,6 +3609,7 @@ function updateDashboard() {
     updateGlobalPerformance();
 
     return;
+
   }
 
 
@@ -3797,12 +3770,22 @@ function updateDashboard() {
   );
 
 
-  document.getElementById(
-    "equity-description"
-  ).textContent =
-    filter === "all"
-      ? "Evolution de tous les capitaux."
-      : `Evolution de ${active.name}.`;
+  const equityDescription =
+    document.getElementById(
+      "equity-description"
+    );
+
+
+  if (
+    equityDescription
+  ) {
+
+    equityDescription.textContent =
+      filter === "all"
+        ? "Evolution de tous les capitaux."
+        : `Evolution de ${active.name}.`;
+
+  }
 
 
   updateGlobalPerformance();
@@ -3874,8 +3857,9 @@ function calculateMaxDrawdown(
 
 
   let equity =
-    Number(startingCapital) ||
-    0;
+    Number(
+      startingCapital
+    ) || 0;
 
 
   let peak =
@@ -3958,6 +3942,7 @@ function updateStreak(
       "Aucune série";
 
     return;
+
   }
 
 
@@ -4090,6 +4075,7 @@ function renderEquityChart(
       `;
 
     return;
+
   }
 
 
@@ -4102,8 +4088,9 @@ function renderEquityChart(
 
 
   let equity =
-    Number(startingCapital) ||
-    0;
+    Number(
+      startingCapital
+    ) || 0;
 
 
   const points = [
@@ -4223,8 +4210,251 @@ function renderEquityChart(
 
 
 /* =========================================================
-   PLAN
+   PLAN DE TRADING - NOUVELLE CHECKLIST
 ========================================================= */
+
+/*
+  Le nouveau index.html utilise une checklist
+  basée sur :
+
+  data-plan-check="fundamental"
+  data-plan-check="usdBias"
+  etc.
+
+  L'ancien système utilisait :
+
+  plan-strategy
+  plan-entry
+  plan-exit
+  plan-risk
+  plan-min-rr
+  check-trend
+  check-setup
+  check-risk
+  check-news
+  check-emotion
+
+  Ces anciens éléments n'existent plus.
+
+  IMPORTANT :
+
+  On ne tente donc plus de lire des éléments
+  qui n'existent pas dans le DOM.
+
+  Cela empêchait auparavant l'application
+  d'atteindre updateAll() au chargement.
+*/
+
+
+const PLAN_CHECKLIST_KEYS = [
+  "fundamental",
+  "usdBias",
+  "h4",
+  "h4Trend",
+  "phase",
+  "m15",
+  "m15Structure",
+  "zone",
+  "validZone",
+  "zoneContext",
+  "returnZone",
+  "reaction",
+  "m1",
+  "shift",
+  "fvg",
+  "entry",
+  "risk",
+  "lot",
+  "sl",
+  "tp",
+  "rr",
+  "noFomo",
+  "noSlMove",
+  "fullPlan"
+];
+
+
+function getPlanChecklistElements() {
+
+  return [
+    ...document.querySelectorAll(
+      "[data-plan-check]"
+    )
+  ];
+
+}
+
+
+function getPlanChecklistState() {
+
+  const state = {};
+
+
+  getPlanChecklistElements()
+    .forEach(
+      checkbox => {
+
+        const key =
+          checkbox.dataset.planCheck;
+
+
+        if (!key) {
+          return;
+        }
+
+
+        state[key] =
+          checkbox.checked;
+
+      }
+    );
+
+
+  return state;
+
+}
+
+
+function applyPlanChecklistState(
+  state = {}
+) {
+
+  getPlanChecklistElements()
+    .forEach(
+      checkbox => {
+
+        const key =
+          checkbox.dataset.planCheck;
+
+
+        if (!key) {
+          return;
+        }
+
+
+        checkbox.checked =
+          Boolean(
+            state[key]
+          );
+
+      }
+    );
+
+}
+
+
+function updatePlanChecklistProgress() {
+
+  const checkboxes =
+    getPlanChecklistElements();
+
+
+  const total =
+    checkboxes.length;
+
+
+  const completed =
+    checkboxes.filter(
+      checkbox =>
+        checkbox.checked
+    ).length;
+
+
+  const percentage =
+    total > 0
+      ? (
+          completed /
+          total
+        ) *
+        100
+      : 0;
+
+
+  const progress =
+    document.getElementById(
+      "plan-checklist-progress"
+    );
+
+
+  if (progress) {
+
+    progress.textContent =
+      `${completed}/${total} (${Math.round(
+        percentage
+      )}%)`;
+
+  }
+
+
+  const permission =
+    document.getElementById(
+      "trade-permission"
+    );
+
+
+  const permissionTitle =
+    document.getElementById(
+      "trade-permission-title"
+    );
+
+
+  const permissionDescription =
+    document.getElementById(
+      "trade-permission-description"
+    );
+
+
+  const allCompleted =
+    total > 0 &&
+    completed === total;
+
+
+  if (permission) {
+
+    permission.classList.toggle(
+      "allowed",
+      allCompleted
+    );
+
+    permission.classList.toggle(
+      "blocked",
+      !allCompleted
+    );
+
+  }
+
+
+  if (permissionTitle) {
+
+    permissionTitle.textContent =
+      allCompleted
+        ? "Trade autorisé"
+        : "Trade non autorisé";
+
+  }
+
+
+  if (
+    permissionDescription
+  ) {
+
+    permissionDescription.textContent =
+      allCompleted
+        ? "Toutes les conditions du plan sont validées."
+        : `${total - completed} condition${
+            total - completed > 1
+              ? "s"
+              : ""
+          } restante${
+            total - completed > 1
+              ? "s"
+              : ""
+          } avant de pouvoir prendre le trade.`;
+
+  }
+
+}
+
 
 function loadPlanIntoForm() {
 
@@ -4232,157 +4462,140 @@ function loadPlanIntoForm() {
     loadPlan();
 
 
-  document.getElementById(
-    "plan-strategy"
-  ).value =
-    plan.strategy ||
-    "";
+  /*
+    Nouveau système de checklist.
+  */
 
+  if (
+    plan &&
+    plan.checklist
+  ) {
 
-  document.getElementById(
-    "plan-entry"
-  ).value =
-    plan.entry ||
-    "";
-
-
-  document.getElementById(
-    "plan-exit"
-  ).value =
-    plan.exit ||
-    "";
-
-
-  document.getElementById(
-    "plan-risk"
-  ).value =
-    plan.risk ??
-    1;
-
-
-  document.getElementById(
-    "plan-min-rr"
-  ).value =
-    plan.minRR ??
-    2;
-
-
-  document.getElementById(
-    "check-trend"
-  ).checked =
-    Boolean(
-      plan.checkTrend
+    applyPlanChecklistState(
+      plan.checklist
     );
 
+  } else {
 
-  document.getElementById(
-    "check-setup"
-  ).checked =
-    Boolean(
-      plan.checkSetup
+    /*
+      Compatibilité avec une éventuelle
+      ancienne sauvegarde contenant directement
+      les clés de checklist.
+    */
+
+    applyPlanChecklistState(
+      plan
     );
 
-
-  document.getElementById(
-    "check-risk"
-  ).checked =
-    Boolean(
-      plan.checkRisk
-    );
+  }
 
 
-  document.getElementById(
-    "check-news"
-  ).checked =
-    Boolean(
-      plan.checkNews
-    );
-
-
-  document.getElementById(
-    "check-emotion"
-  ).checked =
-    Boolean(
-      plan.checkEmotion
-    );
+  updatePlanChecklistProgress();
 
 }
 
 
-document
-  .getElementById(
+function saveCurrentPlan() {
+
+  const existingPlan =
+    loadPlan();
+
+
+  const plan = {
+
+    ...existingPlan,
+
+    checklist:
+      getPlanChecklistState(),
+
+    updatedAt:
+      new Date().toISOString()
+
+  };
+
+
+  savePlan(
+    plan
+  );
+
+
+  updatePlanChecklistProgress();
+
+
+  alert(
+    "Plan de trading sauvegardé."
+  );
+
+}
+
+
+const savePlanButton =
+  document.getElementById(
     "save-plan"
-  )
-  .addEventListener(
+  );
+
+
+if (savePlanButton) {
+
+  savePlanButton.addEventListener(
+    "click",
+    saveCurrentPlan
+  );
+
+}
+
+
+const resetPlanButton =
+  document.getElementById(
+    "reset-plan-checklist"
+  );
+
+
+if (resetPlanButton) {
+
+  resetPlanButton.addEventListener(
     "click",
     () => {
 
-      const plan = {
-
-        strategy:
-          document.getElementById(
-            "plan-strategy"
-          ).value,
-
-        entry:
-          document.getElementById(
-            "plan-entry"
-          ).value,
-
-        exit:
-          document.getElementById(
-            "plan-exit"
-          ).value,
-
-        risk:
-          Number(
-            document.getElementById(
-              "plan-risk"
-            ).value
-          ),
-
-        minRR:
-          Number(
-            document.getElementById(
-              "plan-min-rr"
-            ).value
-          ),
-
-        checkTrend:
-          document.getElementById(
-            "check-trend"
-          ).checked,
-
-        checkSetup:
-          document.getElementById(
-            "check-setup"
-          ).checked,
-
-        checkRisk:
-          document.getElementById(
-            "check-risk"
-          ).checked,
-
-        checkNews:
-          document.getElementById(
-            "check-news"
-          ).checked,
-
-        checkEmotion:
-          document.getElementById(
-            "check-emotion"
-          ).checked
-
-      };
+      const confirmed =
+        window.confirm(
+          "Réinitialiser toute la checklist du plan de trading ?"
+        );
 
 
-      savePlan(
-        plan
-      );
+      if (!confirmed) {
+
+        return;
+
+      }
 
 
-      alert(
-        "Plan de trading sauvegardé."
+      getPlanChecklistElements()
+        .forEach(
+          checkbox => {
+
+            checkbox.checked =
+              false;
+
+          }
+        );
+
+
+      updatePlanChecklistProgress();
+
+    }
+  );
+
+}
+
+
+getPlanChecklistElements()
+  .forEach(
+    checkbox => {
+
+      checkbox.addEventListener(
+        "change",
+        updatePlanChecklistProgress
       );
 
     }
@@ -4407,6 +4620,8 @@ function updateAll() {
 
   updateTradeCalculations();
 
+  updatePlanChecklistProgress();
+
 }
 
 
@@ -4420,6 +4635,13 @@ function setCurrentDate() {
     document.getElementById(
       "current-date"
     );
+
+
+  if (!element) {
+
+    return;
+
+  }
 
 
   const date =
@@ -4444,13 +4666,103 @@ function setCurrentDate() {
    INITIALIZATION
 ========================================================= */
 
-setCurrentDate();
+/*
+  Les scripts sont actuellement placés à la fin
+  du body dans index.html.
 
-loadPlanIntoForm();
+  On recharge néanmoins explicitement les données
+  depuis localStorage avant le premier rendu afin
+  d'éviter qu'un état mémoire ancien ou incomplet
+  ne soit utilisé.
+*/
 
-document.getElementById(
-  "trade-date"
-).value =
-  getDefaultDateTime();
+function refreshDataFromStorage() {
 
-updateAll();
+  trades =
+    loadJSON(
+      STORAGE_KEYS.trades,
+      []
+    );
+
+
+  capitals =
+    loadJSON(
+      STORAGE_KEYS.capitals,
+      []
+    );
+
+
+  if (
+    !Array.isArray(trades)
+  ) {
+
+    trades = [];
+
+  }
+
+
+  if (
+    !Array.isArray(capitals)
+  ) {
+
+    capitals = [];
+
+  }
+
+}
+
+
+function initializeApplication() {
+
+  refreshDataFromStorage();
+
+  setCurrentDate();
+
+  loadPlanIntoForm();
+
+  const tradeDate =
+    document.getElementById(
+      "trade-date"
+    );
+
+
+  if (tradeDate) {
+
+    tradeDate.value =
+      getDefaultDateTime();
+
+  }
+
+
+  updateAll();
+
+}
+
+
+/*
+  Le DOM est normalement déjà disponible
+  puisque app.js est chargé en bas du body.
+
+  Cette sécurité permet néanmoins au script
+  de fonctionner correctement même si sa position
+  venait à changer dans index.html.
+*/
+
+if (
+  document.readyState ===
+  "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeApplication,
+    {
+      once: true
+    }
+  );
+
+} else {
+
+  initializeApplication();
+
+}
