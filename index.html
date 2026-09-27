@@ -2,786 +2,1126 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plan de Trading</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0b0f14"
+  >
+
+  <meta
+    name="description"
+    content="Plan de trading et journal de performance"
+  >
+
+  <meta
+    name="application-name"
+    content="Trading Plan"
+  >
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Trading Plan"
+  >
+
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  >
+
+  <title>Trading Plan</title>
+
   <link rel="stylesheet" href="style.css">
+
+  <!--
+    Le manifest et les icônes seront ajoutés lors de l'étape PWA.
+    Ils ne sont volontairement pas référencés ici tant que les fichiers
+    correspondants n'existent pas.
+  -->
 </head>
+
 <body>
 
-<div class="app">
+  <div class="app">
 
-  <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">T</div>
-      <div>
-        <h1>Trading Plan</h1>
-        <span>Mon journal</span>
-      </div>
-    </div>
+    <!-- =====================================================
+         MOBILE OVERLAY
+    ====================================================== -->
 
-    <nav class="navigation">
-      <button class="nav-button active" data-page="dashboard">
-        <span>⌂</span>Dashboard
-      </button>
-
-      <button class="nav-button" data-page="journal">
-        <span>▤</span>Journal
-      </button>
-
-      <button class="nav-button" data-page="capitals">
-        <span>◉</span>Capitaux
-      </button>
-
-      <button class="nav-button" data-page="plan">
-        <span>✓</span>Plan de trading
-      </button>
-    </nav>
-
-    <div class="sidebar-footer">
-      <span>Trading Journal</span>
-      <small>Version 2.0</small>
-    </div>
-  </aside>
-
-  <main class="main">
-
-    <header class="header">
-      <div>
-        <h2 id="page-title">Dashboard</h2>
-        <p id="page-description">Vue générale de ta performance.</p>
-      </div>
-
-      <div class="header-actions">
-        <span id="current-date"></span>
-      </div>
-    </header>
+    <div
+      id="sidebar-overlay"
+      class="sidebar-overlay"
+      aria-hidden="true"
+    ></div>
 
 
-    <!-- ================= DASHBOARD ================= -->
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-    <section class="page active" id="page-dashboard">
+    <aside
+      id="sidebar"
+      class="sidebar"
+      aria-label="Navigation principale"
+    >
 
-      <div class="page-heading">
+      <div class="logo">
+
+        <div
+          class="logo-icon"
+          aria-hidden="true"
+        >
+          T
+        </div>
+
         <div>
-          <h3>Dashboard</h3>
-          <p>Résumé de ton activité de trading.</p>
+          <h1>Trading Plan</h1>
+          <span>Mon journal</span>
         </div>
 
-        <div class="dashboard-capital-selector">
-          <label for="dashboard-capital-filter">Capital</label>
-
-          <select id="dashboard-capital-filter">
-            <option value="active">Capital actif</option>
-            <option value="all">Performance générale</option>
-          </select>
-        </div>
       </div>
 
 
-      <div id="dashboard-no-capital" class="empty-state hidden">
-        <strong>Aucun capital actif</strong>
+      <nav
+        class="navigation"
+        aria-label="Sections de l'application"
+      >
 
-        <p>
-          Crée ton premier capital pour commencer à enregistrer tes trades.
-        </p>
-
-        <button class="primary-button" data-page-button="capitals">
-          + Créer un capital
+        <button
+          type="button"
+          class="nav-button active"
+          data-page="dashboard"
+          aria-current="page"
+        >
+          <span aria-hidden="true">⌂</span>
+          <strong>Dashboard</strong>
         </button>
+
+        <button
+          type="button"
+          class="nav-button"
+          data-page="journal"
+        >
+          <span aria-hidden="true">▤</span>
+          <strong>Journal</strong>
+        </button>
+
+        <button
+          type="button"
+          class="nav-button"
+          data-page="capitals"
+        >
+          <span aria-hidden="true">◈</span>
+          <strong>Capitaux</strong>
+        </button>
+
+        <button
+          type="button"
+          class="nav-button"
+          data-page="plan"
+        >
+          <span aria-hidden="true">✓</span>
+          <strong>Plan de trading</strong>
+        </button>
+
+      </nav>
+
+
+      <div class="sidebar-footer">
+        <span>Trading Journal</span>
+        <span>Version 3.0</span>
       </div>
 
+    </aside>
 
-      <div id="dashboard-content">
 
-        <div class="cards">
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
 
-          <div class="card">
-            <span class="card-label">Capital actuel</span>
+    <main class="main">
 
-            <strong id="dashboard-capital">
-              $0.00
-            </strong>
+      <!-- ===================================================
+           HEADER
+      ==================================================== -->
 
-            <small>
-              Capital initial :
-              <span id="dashboard-start-capital">
-                $0.00
+      <header class="header">
+
+        <div class="header-left">
+
+          <button
+            type="button"
+            id="mobile-menu-button"
+            class="mobile-menu-button"
+            aria-label="Ouvrir le menu"
+            aria-controls="sidebar"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true">☰</span>
+          </button>
+
+          <div>
+
+            <h2 id="page-title">
+              Dashboard
+            </h2>
+
+            <p id="page-description">
+              Vue d'ensemble de tes performances
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="current-date"
+          class="header-actions"
+          aria-live="polite"
+        ></div>
+
+      </header>
+
+
+      <!-- ===================================================
+           DASHBOARD
+      ==================================================== -->
+
+      <section
+        id="page-dashboard"
+        class="page active"
+        data-page-content="dashboard"
+        aria-labelledby="page-title"
+      >
+
+        <div class="page-heading">
+
+          <div>
+            <h3>Dashboard</h3>
+
+            <p>
+              Suivi de ton capital et de tes performances.
+            </p>
+          </div>
+
+
+          <div class="dashboard-capital-selector">
+
+            <label for="dashboard-capital-filter">
+              Affichage
+            </label>
+
+            <select
+              id="dashboard-capital-filter"
+              class="compact-select"
+            >
+              <option value="active">
+                Capital actif
+              </option>
+
+              <option value="all">
+                Performance globale
+              </option>
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- NO CAPITAL -->
+
+        <div
+          id="dashboard-no-capital"
+          class="empty-state hidden"
+        >
+
+          <strong>
+            Aucun capital actif
+          </strong>
+
+          <p>
+            Crée ton premier capital pour commencer à enregistrer tes trades.
+          </p>
+
+          <button
+            type="button"
+            class="primary-button"
+            data-page-button="capitals"
+          >
+            Créer un capital
+          </button>
+
+        </div>
+
+
+        <!-- DASHBOARD CONTENT -->
+
+        <div
+          id="dashboard-content"
+          class="dashboard-content"
+        >
+
+          <!-- KPI CARDS -->
+
+          <div class="cards">
+
+            <article class="card">
+
+              <span class="card-label">
+                Balance actuelle
               </span>
-            </small>
-          </div>
 
-
-          <div class="card">
-            <span class="card-label">P&L total</span>
-
-            <strong id="dashboard-pnl">
-              $0.00
-            </strong>
-
-            <small id="dashboard-pnl-percent">
-              0.00%
-            </small>
-          </div>
-
-
-          <div class="card">
-            <span class="card-label">Win Rate</span>
-
-            <strong id="dashboard-winrate">
-              0.00%
-            </strong>
-
-            <small id="dashboard-wl">
-              0 W / 0 L / 0 BE
-            </small>
-          </div>
-
-
-          <div class="card">
-            <span class="card-label">Trades</span>
-
-            <strong id="dashboard-trades">
-              0
-            </strong>
-
-            <small>
-              Trades enregistrés
-            </small>
-          </div>
-
-        </div>
-
-
-        <div class="cards">
-
-          <div class="card">
-            <span class="card-label">Profit Factor</span>
-
-            <strong id="dashboard-profit-factor">
-              0.00
-            </strong>
-
-            <small>
-              Gains / pertes
-            </small>
-          </div>
-
-
-          <div class="card">
-            <span class="card-label">Avg R</span>
-
-            <strong id="dashboard-avg-r">
-              0.00R
-            </strong>
-
-            <small>
-              R moyen par trade
-            </small>
-          </div>
-
-
-          <div class="card">
-            <span class="card-label">Max Drawdown</span>
-
-            <strong id="dashboard-drawdown">
-              $0.00
-            </strong>
-
-            <small>
-              Drawdown maximum
-            </small>
-          </div>
-
-
-          <div class="card">
-            <span class="card-label">Série actuelle</span>
-
-            <strong id="dashboard-streak">
-              0
-            </strong>
-
-            <small id="dashboard-streak-label">
-              Aucune série
-            </small>
-          </div>
-
-        </div>
-
-
-        <div class="panel">
-
-          <div class="panel-header">
-
-            <div>
-              <h3>
-                Evolution du capital
-              </h3>
-
-              <p id="equity-description">
-                Evolution basée sur les trades enregistrés.
-              </p>
-            </div>
-
-          </div>
-
-          <div class="equity-chart" id="equity-chart">
-            <div class="empty-chart">
-              Aucun trade enregistré.
-            </div>
-          </div>
-
-        </div>
-
-
-        <div class="panel">
-
-          <div class="panel-header">
-
-            <div>
-              <h3>
-                Performance générale
-              </h3>
-
-              <p>
-                Performance cumulée de tous les capitaux.
-              </p>
-            </div>
-
-          </div>
-
-
-          <div class="global-performance-grid">
-
-            <div class="global-stat">
-              <span>P&L global</span>
-
-              <strong id="global-pnl">
+              <strong id="dashboard-capital">
                 $0.00
               </strong>
-            </div>
+
+              <small>
+                Capital actif
+              </small>
+
+            </article>
 
 
-            <div class="global-stat">
-              <span>Trades</span>
+            <article class="card">
 
-              <strong id="global-trades">
-                0
+              <span class="card-label">
+                Capital initial
+              </span>
+
+              <strong id="dashboard-start-capital">
+                $0.00
               </strong>
-            </div>
+
+              <small>
+                Au démarrage
+              </small>
+
+            </article>
 
 
-            <div class="global-stat">
-              <span>Win Rate</span>
+            <article class="card">
 
-              <strong id="global-winrate">
+              <span class="card-label">
+                P&L total
+              </span>
+
+              <strong id="dashboard-pnl">
+                $0.00
+              </strong>
+
+              <small id="dashboard-pnl-percent">
                 0.00%
+              </small>
+
+            </article>
+
+
+            <article class="card">
+
+              <span class="card-label">
+                Win Rate
+              </span>
+
+              <strong id="dashboard-winrate">
+                0.0%
               </strong>
+
+              <small id="dashboard-wl">
+                0 W / 0 L / 0 BE
+              </small>
+
+            </article>
+
+
+            <article class="card">
+
+              <span class="card-label">
+                Trades
+              </span>
+
+              <strong id="dashboard-trades">
+                0
+              </strong>
+
+              <small>
+                Trades enregistrés
+              </small>
+
+            </article>
+
+
+            <article class="card">
+
+              <span class="card-label">
+                Profit Factor
+              </span>
+
+              <strong id="dashboard-profit-factor">
+                —
+              </strong>
+
+              <small>
+                Gains / pertes
+              </small>
+
+            </article>
+
+
+            <article class="card">
+
+              <span class="card-label">
+                Avg R
+              </span>
+
+              <strong id="dashboard-avg-r">
+                0.00R
+              </strong>
+
+              <small>
+                R moyen par trade
+              </small>
+
+            </article>
+
+
+            <article class="card">
+
+              <span class="card-label">
+                Max Drawdown
+              </span>
+
+              <strong id="dashboard-drawdown">
+                $0.00
+              </strong>
+
+              <small>
+                Perte maximale
+              </small>
+
+            </article>
+
+
+            <article class="card">
+
+              <span class="card-label">
+                Série actuelle
+              </span>
+
+              <strong id="dashboard-streak">
+                0
+              </strong>
+
+              <small id="dashboard-streak-label">
+                Aucun trade
+              </small>
+
+            </article>
+
+          </div>
+
+
+          <!-- EQUITY -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <h3>
+                  Courbe d'équité
+                </h3>
+
+                <p id="equity-description">
+                  Évolution du capital après chaque trade.
+                </p>
+              </div>
+
             </div>
 
 
-            <div class="global-stat">
-              <span>Capitaux</span>
+            <div
+              id="equity-chart"
+              class="equity-chart"
+              aria-label="Courbe d'évolution du capital"
+            >
 
-              <strong id="global-capitals">
-                0
-              </strong>
+              <div class="empty-chart">
+                Aucun trade enregistré.
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- GLOBAL PERFORMANCE -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <h3>
+                  Performance globale
+                </h3>
+
+                <p>
+                  Résultats cumulés sur le capital actif et les capitaux archivés.
+                </p>
+              </div>
+
+            </div>
+
+
+            <div class="global-performance-grid">
+
+              <div class="global-stat">
+
+                <span>
+                  P&L global
+                </span>
+
+                <strong id="global-pnl">
+                  $0.00
+                </strong>
+
+              </div>
+
+
+              <div class="global-stat">
+
+                <span>
+                  Trades
+                </span>
+
+                <strong id="global-trades">
+                  0
+                </strong>
+
+              </div>
+
+
+              <div class="global-stat">
+
+                <span>
+                  Win Rate
+                </span>
+
+                <strong id="global-winrate">
+                  0.0%
+                </strong>
+
+              </div>
+
+
+              <div class="global-stat">
+
+                <span>
+                  Capitaux
+                </span>
+
+                <strong id="global-capitals">
+                  0
+                </strong>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- RECENT TRADES -->
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <h3>
+                  Trades récents
+                </h3>
+
+                <p>
+                  Les dernières opérations enregistrées.
+                </p>
+              </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Date</th>
+                    <th>Capital</th>
+                    <th>Actif</th>
+                    <th>Direction</th>
+                    <th>RR</th>
+                    <th>Résultat</th>
+                    <th>P&L</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="recent-trades">
+
+                  <tr>
+                    <td
+                      colspan="7"
+                      class="empty"
+                    >
+                      Aucun trade enregistré.
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </section>
+
+
+      <!-- ===================================================
+           JOURNAL
+      ==================================================== -->
+
+      <section
+        id="page-journal"
+        class="page"
+        data-page-content="journal"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <h3>
+              Journal des trades
+            </h3>
+
+            <p>
+              Historique complet de tes opérations.
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            id="open-trade-modal"
+            class="primary-button"
+          >
+            + Ajouter un trade
+          </button>
+
+        </div>
+
+
+        <!-- NO CAPITAL -->
+
+        <div
+          id="journal-no-capital"
+          class="empty-state hidden"
+        >
+
+          <strong>
+            Aucun capital actif
+          </strong>
+
+          <p>
+            Crée ou active un capital avant d'enregistrer un trade.
+          </p>
+
+          <button
+            type="button"
+            class="primary-button"
+            data-page-button="capitals"
+          >
+            Gérer mes capitaux
+          </button>
+
+        </div>
+
+
+        <!-- JOURNAL CONTENT -->
+
+        <div
+          id="journal-summary"
+          class="journal-content"
+        >
+
+          <div class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  Historique
+                </h3>
+
+                <p>
+                  Consulte et analyse tes opérations.
+                </p>
+
+              </div>
+
+
+              <label class="journal-filter">
+
+                <span class="sr-only">
+                  Filtrer les trades
+                </span>
+
+                <select
+                  id="journal-capital-filter"
+                  class="compact-select"
+                >
+
+                  <option value="all">
+                    Tous les capitaux
+                  </option>
+
+                  <option value="active">
+                    Capital actif
+                  </option>
+
+                </select>
+
+              </label>
+
+            </div>
+
+
+            <div class="table-container">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Date</th>
+                    <th>Capital</th>
+                    <th>Actif</th>
+                    <th>Direction</th>
+                    <th>Entrée</th>
+                    <th>SL</th>
+                    <th>TP</th>
+                    <th>Lot</th>
+                    <th>RR</th>
+                    <th>Résultat</th>
+                    <th>Pips</th>
+                    <th>P&L</th>
+                    <th>R</th>
+                    <th>Action</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="journal-trades">
+
+                  <tr>
+                    <td
+                      colspan="14"
+                      class="empty"
+                    >
+                      Aucun trade enregistré.
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
             </div>
 
           </div>
 
         </div>
 
+      </section>
 
-        <div class="panel">
+
+      <!-- ===================================================
+           CAPITALS
+      ==================================================== -->
+
+      <section
+        id="page-capitals"
+        class="page"
+        data-page-content="capitals"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <h3>
+              Capitaux
+            </h3>
+
+            <p>
+              Gère ton capital actif et tes historiques.
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            id="open-capital-modal"
+            class="primary-button"
+          >
+            + Nouveau capital
+          </button>
+
+        </div>
+
+
+        <!-- CAPITAL OVERVIEW -->
+
+        <div class="capital-overview">
+
+          <article class="capital-overview-card">
+
+            <span>
+              Capital actif
+            </span>
+
+            <strong id="active-capital-name">
+              Aucun capital
+            </strong>
+
+            <small>
+              Capital utilisé pour les nouveaux trades
+            </small>
+
+          </article>
+
+
+          <article class="capital-overview-card">
+
+            <span>
+              Balance actuelle
+            </span>
+
+            <strong id="active-capital-balance">
+              $0.00
+            </strong>
+
+            <small>
+              Capital actif
+            </small>
+
+          </article>
+
+
+          <article class="capital-overview-card">
+
+            <span>
+              Capitaux archivés
+            </span>
+
+            <strong id="archived-capitals-count">
+              0
+            </strong>
+
+            <small id="capitals-global-pnl">
+              P&L global : $0.00
+            </small>
+
+          </article>
+
+        </div>
+
+
+        <!-- ACTIVE CAPITAL -->
+
+        <section class="panel">
 
           <div class="panel-header">
 
             <div>
+
               <h3>
-                Derniers trades
+                Capital actif
               </h3>
 
               <p>
-                Les dernières opérations enregistrées.
+                Le capital utilisé pour tes prochains trades.
               </p>
+
             </div>
+
+          </div>
+
+
+          <div
+            id="active-capital-container"
+            class="capital-list"
+          ></div>
+
+        </section>
+
+
+        <!-- ARCHIVED CAPITALS -->
+
+        <section class="panel">
+
+          <div class="panel-header">
+
+            <div>
+
+              <h3>
+                Capitaux archivés
+              </h3>
+
+              <p>
+                Historique des anciens capitaux.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="archived-capitals-container"
+            class="capital-list"
+          ></div>
+
+        </section>
+
+      </section>
+
+
+      <!-- ===================================================
+           PLAN DE TRADING
+      ==================================================== -->
+
+      <section
+        id="page-plan"
+        class="page"
+        data-page-content="plan"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <h3>
+              Plan de trading
+            </h3>
+
+            <p>
+              Ton système et ta checklist d'exécution.
+            </p>
+
+          </div>
+
+
+          <div class="plan-header-actions">
 
             <button
+              type="button"
+              id="reset-plan-checklist"
               class="secondary-button"
-              data-page-button="journal"
             >
-              Voir le journal
+              Réinitialiser
+            </button>
+
+            <button
+              type="button"
+              id="save-plan"
+              class="primary-button"
+            >
+              Sauvegarder
             </button>
 
           </div>
 
-
-          <div class="table-container">
-
-            <table>
-
-              <thead>
-
-                <tr>
-                  <th>Date</th>
-                  <th>Capital</th>
-                  <th>Actif</th>
-                  <th>Direction</th>
-                  <th>RR</th>
-                  <th>Résultat</th>
-                  <th>P&L</th>
-                </tr>
-
-              </thead>
-
-
-              <tbody id="recent-trades">
-
-                <tr>
-                  <td colspan="7" class="empty">
-                    Aucun trade enregistré.
-                  </td>
-                </tr>
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ================= JOURNAL ================= -->
-
-    <section class="page" id="page-journal">
-
-      <div class="page-heading">
-
-        <div>
-          <h3>
-            Journal des trades
-          </h3>
-
-          <p>
-            Enregistre et analyse chaque opération.
-          </p>
         </div>
 
 
-        <button
-          class="primary-button"
-          id="open-trade-modal"
-        >
-          + Ajouter un trade
-        </button>
+        <!-- INTRO -->
 
-      </div>
+        <section class="panel plan-intro-panel">
 
+          <div class="plan-intro">
 
-      <div
-        id="journal-no-capital"
-        class="empty-state hidden"
-      >
+            <div
+              class="plan-intro-icon"
+              aria-hidden="true"
+            >
+              ✓
+            </div>
 
-        <strong>
-          Aucun capital actif
-        </strong>
+            <div>
 
-        <p>
-          Tu dois créer un capital actif avant d'ajouter un trade.
-        </p>
-
-        <button
-          class="primary-button"
-          data-page-button="capitals"
-        >
-          + Créer un capital
-        </button>
-
-      </div>
-
-
-      <div class="panel">
-
-        <div class="panel-header">
-
-          <div>
-            <h3>
-              Trades enregistrés
-            </h3>
-
-            <p id="journal-summary">
-              0 trade
-            </p>
-          </div>
-
-
-          <select
-            id="journal-capital-filter"
-            class="compact-select"
-          >
-            <option value="all">
-              Tous les capitaux
-            </option>
-
-            <option value="active">
-              Capital actif
-            </option>
-          </select>
-
-        </div>
-
-
-        <div class="table-container">
-
-          <table>
-
-            <thead>
-
-              <tr>
-                <th>Date</th>
-                <th>Capital</th>
-                <th>Actif</th>
-                <th>Direction</th>
-                <th>Entrée</th>
-                <th>SL</th>
-                <th>TP</th>
-                <th>Lot</th>
-                <th>RR</th>
-                <th>Résultat</th>
-                <th>Pips</th>
-                <th>P&L</th>
-                <th>R</th>
-                <th></th>
-              </tr>
-
-            </thead>
-
-
-            <tbody id="journal-trades">
-
-              <tr>
-                <td colspan="14" class="empty">
-                  Aucun trade enregistré.
-                </td>
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ================= CAPITAUX ================= -->
-
-    <section class="page" id="page-capitals">
-
-      <div class="page-heading">
-
-        <div>
-          <h3>
-            Gestion des capitaux
-          </h3>
-
-          <p>
-            Crée, gère et archive tes capitaux de trading.
-          </p>
-        </div>
-
-
-        <button
-          class="primary-button"
-          id="open-capital-modal"
-        >
-          + Nouveau capital
-        </button>
-
-      </div>
-
-
-      <div class="capital-overview">
-
-        <div class="capital-overview-card">
-
-          <span>
-            Capital actif
-          </span>
-
-          <strong id="active-capital-name">
-            Aucun
-          </strong>
-
-          <small id="active-capital-balance">
-            $0.00
-          </small>
-
-        </div>
-
-
-        <div class="capital-overview-card">
-
-          <span>
-            Capitaux archivés
-          </span>
-
-          <strong id="archived-capitals-count">
-            0
-          </strong>
-
-          <small>
-            Historique conservé
-          </small>
-
-        </div>
-
-
-        <div class="capital-overview-card">
-
-          <span>
-            P&L général
-          </span>
-
-          <strong id="capitals-global-pnl">
-            $0.00
-          </strong>
-
-          <small>
-            Actif + archives
-          </small>
-
-        </div>
-
-      </div>
-
-
-      <div class="panel">
-
-        <div class="panel-header">
-
-          <div>
-            <h3>
-              Capital actif
-            </h3>
-
-            <p>
-              Le capital actuellement utilisé pour tes nouveaux trades.
-            </p>
-          </div>
-
-        </div>
-
-
-        <div
-          id="active-capital-container"
-          class="capital-list"
-        >
-
-          <div class="empty">
-            Aucun capital actif.
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="panel">
-
-        <div class="panel-header">
-
-          <div>
-            <h3>
-              Capitaux archivés
-            </h3>
-
-            <p>
-              Les anciens capitaux restent disponibles dans ton historique.
-            </p>
-          </div>
-
-        </div>
-
-
-        <div
-          id="archived-capitals-container"
-          class="capital-list"
-        >
-
-          <div class="empty">
-            Aucun capital archivé.
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ================= PLAN DE TRADING ================= -->
-
-    <section class="page" id="page-plan">
-
-      <div class="page-heading">
-
-        <div>
-          <h3>
-            Plan de trading
-          </h3>
-
-          <p>
-            Ton système complet : Fondamentale → H4 → M15 → M1 → Exécution.
-          </p>
-        </div>
-
-        <div class="plan-header-actions">
-          <button
-            class="secondary-button"
-            id="reset-plan-checklist"
-          >
-            Réinitialiser
-          </button>
-
-          <button
-            class="primary-button"
-            id="save-plan"
-          >
-            Sauvegarder
-          </button>
-        </div>
-
-      </div>
-
-
-      <!-- OBJECTIF -->
-
-      <div class="panel plan-intro-panel">
-
-        <div class="plan-intro">
-
-          <div class="plan-intro-icon">
-            T
-          </div>
-
-          <div>
-
-            <span class="plan-eyebrow">
-              SYSTÈME MULTI-TIMEFRAME
-            </span>
-
-            <h3>
-              Je ne cherche pas à anticiper l'entrée.
-            </h3>
-
-            <p>
-              Je construis d'abord le contexte, j'identifie une zone
-              d'intérêt sur M15, puis j'attends une confirmation structurelle
-              sur M1 avant d'exécuter.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- 01 FONDAMENTALE -->
-
-      <details class="plan-section" open>
-
-        <summary>
-
-          <span class="plan-number">
-            01
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Direction fondamentale
-            </strong>
-
-            <span>
-              Déterminer le biais directionnel avant toute analyse technique.
-            </span>
-
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="plan-two-columns">
-
-            <div class="plan-info-card">
-
-              <span class="plan-card-label">
-                DONNÉES MACROÉCONOMIQUES US
+              <span class="plan-eyebrow">
+                SYSTÈME DE TRADING
               </span>
 
-              <h4>
-                Données principales
-              </h4>
+              <h3>
+                Exécuter le plan avant de chercher un trade
+              </h3>
 
-              <ul>
-                <li>NFP — Non-Farm Payrolls</li>
-                <li>CPI — Inflation</li>
-                <li>TD — Taux directeur</li>
-                <li>Autres données macro importantes si nécessaire</li>
-              </ul>
-
-              <p class="plan-note">
-                La fondamentale définit le biais directionnel.
-                Elle ne constitue pas à elle seule un signal d'entrée.
+              <p>
+                Chaque opération doit respecter les conditions définies
+                dans ton système. La checklist sert à confirmer que le
+                contexte, la zone, la confirmation et le risque sont alignés.
               </p>
 
             </div>
 
+          </div>
 
-            <div class="plan-info-card">
+        </section>
 
-              <span class="plan-card-label">
-                USD / DXY
+
+        <!-- =================================================
+             PLAN SECTIONS
+        ================================================== -->
+
+
+        <!-- 01 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              01
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Direction fondamentale
+              </strong>
+
+              <span>
+                Déterminer le biais général avant l'analyse technique.
               </span>
 
-              <h4>
-                Biais directionnel
-              </h4>
+            </div>
 
-              <div class="bias-grid">
+            <span
+              class="plan-chevron"
+              aria-hidden="true"
+            >
+              +
+            </span>
 
-                <div class="bias-item positive">
-                  <strong>USD fort</strong>
-                  <span>
-                    USD/XXX : préférence BUY<br>
-                    XXX/USD : préférence SELL<br>
-                    GOLD : préférence SELL
-                  </span>
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="plan-two-columns">
+
+              <div class="plan-info-card">
+
+                <span class="plan-card-label">
+                  MACROÉCONOMIE
+                </span>
+
+                <h4>
+                  Données économiques des États-Unis
+                </h4>
+
+                <p>
+                  Observer les données macroéconomiques importantes,
+                  notamment l'inflation, l'emploi et les décisions de
+                  politique monétaire.
+                </p>
+
+                <div class="bias-grid">
+
+                  <div class="bias-item positive">
+
+                    <strong>
+                      Donnée positive USD
+                    </strong>
+
+                    <span>
+                      Peut soutenir le dollar américain selon le contexte.
+                    </span>
+
+                  </div>
+
+
+                  <div class="bias-item negative">
+
+                    <strong>
+                      Donnée négative USD
+                    </strong>
+
+                    <span>
+                      Peut exercer une pression sur le dollar américain
+                      selon le contexte.
+                    </span>
+
+                  </div>
+
                 </div>
 
-                <div class="bias-item negative">
-                  <strong>USD faible</strong>
+              </div>
+
+
+              <div class="plan-info-card">
+
+                <span class="plan-card-label">
+                  GÉOPOLITIQUE
+                </span>
+
+                <h4>
+                  Situation internationale
+                </h4>
+
+                <p>
+                  Identifier les événements géopolitiques susceptibles
+                  d'affecter le dollar, l'or ou les autres actifs suivis.
+                </p>
+
+                <div class="gold-rule">
+
+                  <strong>
+                    Principe
+                  </strong>
+
                   <span>
-                    USD/XXX : préférence SELL<br>
-                    XXX/USD : préférence BUY<br>
-                    GOLD : préférence BUY
+                    La situation fondamentale sert à définir le contexte,
+                    pas à forcer une entrée.
                   </span>
+
                 </div>
 
               </div>
@@ -790,123 +1130,61 @@
 
           </div>
 
+        </details>
 
-          <div class="plan-info-card full-width">
 
-            <span class="plan-card-label">
-              GÉOPOLITIQUE
+        <!-- 02 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              02
             </span>
 
-            <h4>
-              Contexte international
-            </h4>
+            <div class="plan-summary-content">
 
-            <p>
-              Analyser les événements pouvant affecter le USD, le DXY,
-              l'or et les principales devises. Déterminer si le contexte
-              est favorable ou défavorable au USD/DXY.
-            </p>
+              <strong>
+                Analyse H4
+              </strong>
 
-            <div class="gold-rule">
-              <strong>Règle GOLD</strong>
               <span>
-                DXY favorable / USD fort → préférence SELL GOLD
-                <br>
-                DXY défavorable / USD faible → préférence BUY GOLD
+                Identifier la tendance et la structure principale.
               </span>
+
             </div>
 
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 02 H4 -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            02
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Analyse de la tendance H4
-            </strong>
-
-            <span>
-              Identifier la direction et la phase actuelle du marché.
+            <span class="plan-chevron">
+              +
             </span>
 
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
+          </summary>
 
 
-        <div class="plan-section-content">
-
-          <div class="plan-info-card full-width">
-
-            <span class="plan-card-label">
-              STRUCTURE H4
-            </span>
-
-            <h4>
-              Questions à résoudre
-            </h4>
+          <div class="plan-section-content">
 
             <div class="question-list">
 
               <div>
                 <span>01</span>
-                <p>Quelle est la tendance générale du marché ?</p>
+                <p>Quelle est la direction générale du marché ?</p>
               </div>
 
               <div>
                 <span>02</span>
-                <p>Quelle est la structure dominante ?</p>
+                <p>La structure forme-t-elle des HH/HL ou LH/LL ?</p>
               </div>
 
               <div>
                 <span>03</span>
-                <p>Le marché forme-t-il HH / HL ou LH / LL ?</p>
+                <p>Le marché est-il en tendance ou en range ?</p>
               </div>
 
               <div>
                 <span>04</span>
-                <p>Y a-t-il eu un BOS ou un changement structurel ?</p>
+                <p>Où se trouvent les zones importantes ?</p>
               </div>
-
-              <div>
-                <span>05</span>
-                <p>Sommes-nous en distribution ou en correction ?</p>
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="plan-two-columns">
-
-            <div class="phase-card">
-
-              <span class="phase-title">
-                DISTRIBUTION
-              </span>
-
-              <p>
-                Le marché développe son mouvement directionnel principal.
-              </p>
 
             </div>
 
@@ -914,2041 +1192,2379 @@
             <div class="phase-card">
 
               <span class="phase-title">
-                CORRECTION
+                PHASE DU MARCHÉ
               </span>
 
               <p>
-                Mouvement temporaire contre la direction principale,
-                pouvant précéder une continuation.
+                Identifier si le marché est en accumulation, expansion,
+                correction ou distribution avant de rechercher une entrée.
               </p>
 
             </div>
 
           </div>
 
-
-          <div class="plan-rule">
-            <strong>Question H4 :</strong>
-            « Dans quelle direction le marché évolue-t-il et sommes-nous
-            actuellement dans une phase de distribution ou de correction ? »
-          </div>
-
-        </div>
-
-      </details>
+        </details>
 
 
-      <!-- 03 M15 -->
+        <!-- 03 -->
 
-      <details class="plan-section">
+        <details class="plan-section">
 
-        <summary>
+          <summary>
 
-          <span class="plan-number">
-            03
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Structure M15
-            </strong>
-
-            <span>
-              Timeframe principal de travail.
+            <span class="plan-number">
+              03
             </span>
 
-          </div>
+            <div class="plan-summary-content">
 
-          <span class="plan-chevron">
-            +
-          </span>
+              <strong>
+                Structure M15
+              </strong>
 
-        </summary>
+              <span>
+                Affiner la lecture de la structure.
+              </span>
 
+            </div>
 
-        <div class="plan-section-content">
-
-          <div class="plan-info-card full-width">
-
-            <span class="plan-card-label">
-              M15 — STRUCTURE
+            <span class="plan-chevron">
+              +
             </span>
 
-            <h4>
-              Ce que je recherche
-            </h4>
+          </summary>
+
+
+          <div class="plan-section-content">
 
             <div class="structure-grid">
 
               <div>
-                <strong>Direction</strong>
-                <span>Direction actuelle du marché</span>
+                <strong>HH</strong>
+                <span>Higher High</span>
               </div>
 
               <div>
-                <strong>HH / HL</strong>
-                <span>Structure haussière</span>
+                <strong>HL</strong>
+                <span>Higher Low</span>
               </div>
 
               <div>
-                <strong>LH / LL</strong>
-                <span>Structure baissière</span>
+                <strong>LH</strong>
+                <span>Lower High</span>
+              </div>
+
+              <div>
+                <strong>LL</strong>
+                <span>Lower Low</span>
               </div>
 
               <div>
                 <strong>BOS</strong>
-                <span>Rupture de structure</span>
+                <span>Break of Structure</span>
               </div>
 
               <div>
-                <strong>Swings</strong>
-                <span>Points hauts et bas importants</span>
-              </div>
-
-              <div>
-                <strong>Impulsion</strong>
-                <span>Origine des mouvements forts</span>
+                <strong>CHOCH</strong>
+                <span>Changement potentiel</span>
               </div>
 
             </div>
 
-          </div>
 
-
-          <div class="plan-rule">
-
-            <strong>Priorité :</strong>
-
-            <span>
-              Fondamentale → H4 → M15.
-              Je privilégie les setups M15 cohérents avec les trois niveaux
-              d'analyse.
-            </span>
-
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 04 ZONES -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            04
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Zones d'intérêt M15
-            </strong>
-
-            <span>
-              Identifier les zones pouvant provoquer une réaction du prix.
-            </span>
-
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="zone-grid">
-
-            <div class="zone-card">
-              <strong>OB</strong>
-              <span>Order Block</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>BB</strong>
-              <span>Breaker Block</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>QM</strong>
-              <span>Quasimodo</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>LDP</strong>
-              <span>Low / High Distribution Point</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>FVG</strong>
-              <span>Fair Value Gap</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>IFVG</strong>
-              <span>Inverse Fair Value Gap</span>
-            </div>
-
-          </div>
-
-
-          <div class="plan-info-card full-width">
-
-            <span class="plan-card-label">
-              PRIORITÉ
-            </span>
-
-            <p>
-              Je recherche particulièrement les zones liées à l'origine
-              d'un mouvement impulsif, au début d'une distribution ou
-              à une correction importante.
-            </p>
-
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 05 GOLD -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            05
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Exemple d'application — GOLD
-            </strong>
-
-            <span>
-              Exemple de lecture complète du contexte jusqu'à la zone M15.
-            </span>
-
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="scenario-flow">
-
-            <div class="scenario-step">
-              <span>1</span>
-              <strong>Fondamentale</strong>
-              <p>
-                USD / DXY favorable → biais SELL GOLD.
-              </p>
-            </div>
-
-            <div class="scenario-arrow">↓</div>
-
-            <div class="scenario-step">
-              <span>2</span>
-              <strong>H4</strong>
-              <p>
-                Tendance baissière, structure dominante baissière,
-                distribution baissière.
-              </p>
-            </div>
-
-            <div class="scenario-arrow">↓</div>
-
-            <div class="scenario-step">
-              <span>3</span>
-              <strong>M15</strong>
-              <p>
-                Structure baissière. Le dernier Low est cassé → nouveau LL.
-              </p>
-            </div>
-
-            <div class="scenario-arrow">↓</div>
-
-            <div class="scenario-step">
-              <span>4</span>
-              <strong>Recherche de zone</strong>
-              <p>
-                Rechercher le dernier mouvement avant la cassure et
-                identifier les zones valides entre le dernier HL et le nouveau LL.
-              </p>
-            </div>
-
-          </div>
-
-
-          <div class="zone-grid">
-
-            <div class="zone-card">
-              <strong>OB</strong>
-              <span>Order Block</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>BB</strong>
-              <span>Breaker Block</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>QM + LDP</strong>
-              <span>Zone de confluence</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>FVG</strong>
-              <span>Gap de valeur</span>
-            </div>
-
-            <div class="zone-card">
-              <strong>IFVG</strong>
-              <span>Inverse FVG</span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 06 RETOUR -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            06
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Attendre le retour du prix
-            </strong>
-
-            <span>
-              Ne jamais poursuivre le prix.
-            </span>
-
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="execution-rule danger-rule">
-
-            <span class="rule-icon">
-              !
-            </span>
-
-            <div>
+            <div class="plan-rule">
 
               <strong>
-                PAS DE CHASSE DU PRIX
+                Règle :
               </strong>
 
-              <p>
-                Je n'entre pas parce que le marché part sans moi.
-                J'attends que le prix revienne dans une zone M15 identifiée.
-              </p>
+              Ne pas entrer uniquement sur une cassure. Attendre que
+              la structure soit cohérente avec le contexte supérieur.
 
             </div>
 
           </div>
 
+        </details>
 
-          <div class="plan-info-card full-width">
 
-            <h4>
-              Passage sur M1
-            </h4>
+        <!-- 04 -->
 
-            <p>
-              Lorsque le prix approche ou entre dans la zone M15,
-              je descends sur M1. M1 sert uniquement à confirmer l'entrée.
-              Il ne sert pas à déterminer la tendance principale.
-            </p>
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              04
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Zones d'intérêt M15
+              </strong>
+
+              <span>
+                Identifier les zones où le prix peut réagir.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="zone-grid">
+
+              <div class="zone-card">
+                <strong>ZS</strong>
+                <span>Zone de support</span>
+              </div>
+
+              <div class="zone-card">
+                <strong>ZR</strong>
+                <span>Zone de résistance</span>
+              </div>
+
+              <div class="zone-card">
+                <strong>OB</strong>
+                <span>Order Block</span>
+              </div>
+
+              <div class="zone-card">
+                <strong>BB</strong>
+                <span>Breaker Block</span>
+              </div>
+
+              <div class="zone-card">
+                <strong>QM</strong>
+                <span>Quasimodo</span>
+              </div>
+
+              <div class="zone-card">
+                <strong>FIBO 50</strong>
+                <span>Retracement 50%</span>
+              </div>
+
+            </div>
 
           </div>
 
-        </div>
-
-      </details>
+        </details>
 
 
-      <!-- 07 M1 -->
+        <!-- 05 -->
 
-      <details class="plan-section">
+        <details class="plan-section">
 
-        <summary>
+          <summary>
 
-          <span class="plan-number">
-            07
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Confirmation d'entrée M1
-            </strong>
-
-            <span>
-              Le M1 valide le timing d'entrée.
+            <span class="plan-number">
+              05
             </span>
 
-          </div>
+            <div class="plan-summary-content">
 
-          <span class="plan-chevron">
-            +
-          </span>
+              <strong>
+                Scénario GOLD
+              </strong>
 
-        </summary>
+              <span>
+                Exemple de déroulement avant une entrée.
+              </span>
 
+            </div>
 
-        <div class="plan-section-content">
-
-          <div class="plan-info-card full-width">
-
-            <span class="plan-card-label">
-              STRUCTURAL SHIFT
+            <span class="plan-chevron">
+              +
             </span>
 
-            <h4>
-              Confirmation recherchée
-            </h4>
+          </summary>
 
-            <ol class="numbered-list">
 
-              <li>
+          <div class="plan-section-content">
+
+            <div class="scenario-flow">
+
+              <div class="scenario-step">
+
                 <span>1</span>
-                <p>
-                  Le prix atteint la zone M15.
-                </p>
-              </li>
 
-              <li>
+                <strong>
+                  Contexte
+                </strong>
+
+                <p>
+                  Direction fondamentale et structure H4 cohérentes.
+                </p>
+
+              </div>
+
+
+              <div class="scenario-arrow">
+                ↓
+              </div>
+
+
+              <div class="scenario-step">
+
                 <span>2</span>
-                <p>
-                  Une réaction apparaît.
-                </p>
-              </li>
 
-              <li>
+                <strong>
+                  Zone
+                </strong>
+
+                <p>
+                  Le prix revient vers une zone M15 identifiée à l'avance.
+                </p>
+
+              </div>
+
+
+              <div class="scenario-arrow">
+                ↓
+              </div>
+
+
+              <div class="scenario-step">
+
                 <span>3</span>
-                <p>
-                  La structure M1 change.
-                </p>
-              </li>
 
-              <li>
+                <strong>
+                  Réaction
+                </strong>
+
+                <p>
+                  Le prix montre une réaction dans la zone.
+                </p>
+
+              </div>
+
+
+              <div class="scenario-arrow">
+                ↓
+              </div>
+
+
+              <div class="scenario-step">
+
                 <span>4</span>
-                <p>
-                  CHoCH / Structural Shift confirmé.
-                </p>
-              </li>
 
-              <li>
+                <strong>
+                  Confirmation M1
+                </strong>
+
+                <p>
+                  Attendre le signal de confirmation avant l'entrée.
+                </p>
+
+              </div>
+
+
+              <div class="scenario-arrow">
+                ↓
+              </div>
+
+
+              <div class="scenario-step">
+
                 <span>5</span>
+
+                <strong>
+                  Exécution
+                </strong>
+
                 <p>
-                  Un FVG apparaît pendant le déplacement.
+                  Calcul du risque, du lot, du SL et du TP avant l'entrée.
                 </p>
-              </li>
 
-              <li>
-                <span>6</span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </details>
+
+
+        <!-- 06 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              06
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Retour du prix
+              </strong>
+
+              <span>
+                Ne pas poursuivre le marché après le mouvement.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="plan-info-card full-width">
+
+              <h4>
+                Attendre le retour dans la zone
+              </h4>
+
+              <p>
+                Si le prix part sans revenir dans la zone prévue,
+                l'opportunité est considérée comme manquée.
+                Ne pas poursuivre le mouvement par peur de manquer le trade.
+              </p>
+
+            </div>
+
+          </div>
+
+        </details>
+
+
+        <!-- 07 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              07
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Confirmation M1
+              </strong>
+
+              <span>
+                Validation de l'entrée sur l'unité d'exécution.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="plan-two-columns">
+
+              <div class="plan-info-card">
+
+                <span class="plan-card-label">
+                  CONFIRMATION
+                </span>
+
+                <h4>
+                  Réaction + Shift + FVG
+                </h4>
+
                 <p>
-                  L'entrée se fait sur le FVG à l'origine du mouvement
-                  ayant provoqué le changement de structure.
+                  Chercher une réaction claire, un changement de structure
+                  et, lorsque présent dans le système, un déplacement
+                  accompagné d'une inefficience.
                 </p>
-              </li>
 
-            </ol>
-
-          </div>
+              </div>
 
 
-          <div class="zone-grid">
+              <div class="plan-info-card">
 
-            <div class="zone-card">
-              <strong>OB</strong>
-              <span>Entrée possible</span>
-            </div>
+                <span class="plan-card-label">
+                  ENTRÉE
+                </span>
 
-            <div class="zone-card">
-              <strong>BB</strong>
-              <span>Entrée possible</span>
-            </div>
+                <h4>
+                  Exécution uniquement après validation
+                </h4>
 
-            <div class="zone-card">
-              <strong>QM + LDP</strong>
-              <span>Entrée possible</span>
-            </div>
+                <p>
+                  L'entrée ne doit pas être déclenchée simplement parce
+                  que le prix atteint une zone.
+                </p>
 
-            <div class="zone-card">
-              <strong>FVG</strong>
-              <span>Entrée possible</span>
-            </div>
+              </div>
 
-            <div class="zone-card">
-              <strong>IFVG</strong>
-              <span>Entrée possible</span>
             </div>
 
           </div>
 
-        </div>
-
-      </details>
+        </details>
 
 
-      <!-- 08 CONDITIONS -->
+        <!-- 08 -->
 
-      <details class="plan-section">
+        <details class="plan-section">
 
-        <summary>
+          <summary>
 
-          <span class="plan-number">
-            08
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Conditions obligatoires avant entrée
-            </strong>
-
-            <span>
-              Si une condition essentielle manque : pas de trade.
+            <span class="plan-number">
+              08
             </span>
 
-          </div>
+            <div class="plan-summary-content">
 
-          <span class="plan-chevron">
-            +
-          </span>
+              <strong>
+                Conditions obligatoires
+              </strong>
 
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="mandatory-grid">
-
-            <div class="mandatory-item">
-              <span>01</span>
-              <strong>Zone M15 valide</strong>
-              <p>OB, BB, QM + LDP, FVG ou IFVG.</p>
-            </div>
-
-            <div class="mandatory-item">
-              <span>02</span>
-              <strong>Réaction</strong>
-              <p>Réaction claire dans ou autour de la zone.</p>
-            </div>
-
-            <div class="mandatory-item">
-              <span>03</span>
-              <strong>Structural Shift M1</strong>
-              <p>Changement de structure confirmé.</p>
-            </div>
-
-            <div class="mandatory-item">
-              <span>04</span>
-              <strong>FVG</strong>
-              <p>FVG créée lors du mouvement de confirmation lorsque le setup l'exige.</p>
-            </div>
-
-            <div class="mandatory-item">
-              <span>05</span>
-              <strong>Cohérence directionnelle</strong>
-              <p>Fondamentale → H4 → M15 → M1.</p>
-            </div>
-
-          </div>
-
-
-          <div class="no-trade-banner">
-
-            <strong>
-              UNE CONDITION ESSENTIELLE MANQUE ?
-            </strong>
-
-            <span>
-              PAS DE TRADE.
-            </span>
-
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 09 SL -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            09
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Stop Loss
-            </strong>
-
-            <span>
-              Le SL représente le niveau d'invalidation du scénario.
-            </span>
-
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="plan-rule-grid">
-
-            <div>
-              <strong>SL = Invalidation</strong>
               <span>
-                Le Stop Loss doit être placé derrière la structure ou
-                le niveau qui invalide l'analyse.
+                Les éléments nécessaires avant toute entrée.
               </span>
+
             </div>
 
-            <div>
-              <strong>Jamais élargir</strong>
-              <span>
-                Je ne déplace jamais le SL simplement parce que le prix
-                évolue temporairement contre moi.
-              </span>
-            </div>
-
-            <div>
-              <strong>Scénario invalidé</strong>
-              <span>
-                Si le niveau d'invalidation est atteint, le scénario
-                n'est plus valide.
-              </span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 10 TP -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            10
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Take Profit
-            </strong>
-
-            <span>
-              Le TP est basé principalement sur la structure M15.
+            <span class="plan-chevron">
+              +
             </span>
 
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="mandatory-grid">
+
+              <div class="mandatory-item">
+                <span>01</span>
+                <strong>Contexte</strong>
+                <p>Le contexte supérieur doit être défini.</p>
+              </div>
+
+              <div class="mandatory-item">
+                <span>02</span>
+                <strong>Zone</strong>
+                <p>Une zone valide doit être identifiée.</p>
+              </div>
+
+              <div class="mandatory-item">
+                <span>03</span>
+                <strong>Réaction</strong>
+                <p>Le prix doit réagir dans la zone.</p>
+              </div>
+
+              <div class="mandatory-item">
+                <span>04</span>
+                <strong>Confirmation</strong>
+                <p>La confirmation M1 doit être présente.</p>
+              </div>
+
+              <div class="mandatory-item">
+                <span>05</span>
+                <strong>Risque</strong>
+                <p>Le risque doit être calculé avant l'entrée.</p>
+              </div>
+
+            </div>
+
+
+            <div class="no-trade-banner">
+
+              <strong>
+                Une condition obligatoire manque ?
+              </strong>
+
+              <span>
+                PAS DE TRADE
+              </span>
+
+            </div>
+
           </div>
 
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
+        </details>
 
 
-        <div class="plan-section-content">
+        <!-- 09 -->
 
-          <div class="tp-direction-grid">
+        <details class="plan-section">
 
-            <div>
-              <span class="tp-direction">
-                SELL
+          <summary>
+
+            <span class="plan-number">
+              09
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Stop Loss
+              </strong>
+
+              <span>
+                Définir le niveau d'invalidation avant l'entrée.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="plan-rule-grid">
+
+              <div>
+                <strong>Structure</strong>
+                <span>
+                  Le SL doit être placé à un niveau cohérent avec
+                  l'invalidation du scénario.
+                </span>
+              </div>
+
+              <div>
+                <strong>Risque</strong>
+                <span>
+                  Le montant risqué est déterminé avant le calcul du lot.
+                </span>
+              </div>
+
+              <div>
+                <strong>Discipline</strong>
+                <span>
+                  Ne pas déplacer le SL pour éviter une perte prévue.
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </details>
+
+
+        <!-- 10 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              10
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Take Profit
+              </strong>
+
+              <span>
+                Définir l'objectif avant l'exécution.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="tp-direction-grid">
+
+              <div>
+
+                <span class="tp-direction">
+                  BUY
+                </span>
+
+                <strong>
+                  Objectif au-dessus de l'entrée
+                </strong>
+
+                <p>
+                  Le TP est calculé automatiquement à partir de l'entrée,
+                  du SL et du RR choisi.
+                </p>
+
+              </div>
+
+
+              <div>
+
+                <span class="tp-direction">
+                  SELL
+                </span>
+
+                <strong>
+                  Objectif sous l'entrée
+                </strong>
+
+                <p>
+                  Le TP est calculé automatiquement à partir de l'entrée,
+                  du SL et du RR choisi.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </details>
+
+
+        <!-- 11 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              11
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Gestion BE
+              </strong>
+
+              <span>
+                Règles de gestion du break-even.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="management-timeline">
+
+              <div class="management-step">
+
+                <strong>
+                  SL
+                </strong>
+
+                <span>
+                  Le trade commence avec son risque défini.
+                </span>
+
+              </div>
+
+
+              <div class="management-line"></div>
+
+
+              <div class="management-step">
+
+                <strong>
+                  BE
+                </strong>
+
+                <span>
+                  Si le scénario le prévoit, le niveau de sortie BE
+                  est défini manuellement.
+                </span>
+
+              </div>
+
+
+              <div class="management-line"></div>
+
+
+              <div class="management-step">
+
+                <strong>
+                  TP
+                </strong>
+
+                <span>
+                  L'objectif initial reste défini avant l'exécution.
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </details>
+
+
+        <!-- 12 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              12
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Règles générales d'exécution
+              </strong>
+
+              <span>
+                Discipline pendant l'exécution.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="rule-columns">
+
+              <div class="rule-list negative">
+
+                <h4>
+                  INTERDIT
+                </h4>
+
+                <ul>
+                  <li>Entrer par FOMO.</li>
+                  <li>Déplacer le SL sans justification prévue.</li>
+                  <li>Augmenter le risque après une perte.</li>
+                  <li>Poursuivre un mouvement déjà parti.</li>
+                  <li>Entrer sans confirmation.</li>
+                </ul>
+
+              </div>
+
+
+              <div class="rule-list positive">
+
+                <h4>
+                  OBLIGATOIRE
+                </h4>
+
+                <ul>
+                  <li>Respecter le plan.</li>
+                  <li>Calculer le risque avant l'entrée.</li>
+                  <li>Respecter le lot calculé.</li>
+                  <li>Définir SL et TP avant l'entrée.</li>
+                  <li>Documenter le trade après sa clôture.</li>
+                </ul>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </details>
+
+
+        <!-- 13 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              13
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Processus complet
+              </strong>
+
+              <span>
+                La séquence complète avant, pendant et après le trade.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="process-flow">
+
+              <div>
+                <strong>1. Fondamental</strong><br>
+                Définir le contexte général.
+              </div>
+
+              <span>↓</span>
+
+              <div>
+                <strong>2. H4</strong><br>
+                Définir la structure principale.
+              </div>
+
+              <span>↓</span>
+
+              <div>
+                <strong>3. M15</strong><br>
+                Identifier la structure et la zone.
+              </div>
+
+              <span>↓</span>
+
+              <div>
+                <strong>4. Retour du prix</strong><br>
+                Attendre que le prix revienne dans la zone.
+              </div>
+
+              <span>↓</span>
+
+              <div>
+                <strong>5. Confirmation M1</strong><br>
+                Attendre la réaction et la confirmation.
+              </div>
+
+              <span>↓</span>
+
+              <div>
+                <strong>6. Risk Management</strong><br>
+                Calculer risque, lot, SL, TP et RR.
+              </div>
+
+              <span>↓</span>
+
+              <div>
+                <strong>7. Exécution</strong><br>
+                Entrer uniquement si toutes les conditions sont réunies.
+              </div>
+
+              <span>↓</span>
+
+              <div>
+                <strong>8. Journal</strong><br>
+                Enregistrer le résultat et les observations.
+              </div>
+
+            </div>
+
+          </div>
+
+        </details>
+
+
+        <!-- 14 -->
+
+        <details class="plan-section">
+
+          <summary>
+
+            <span class="plan-number">
+              14
+            </span>
+
+            <div class="plan-summary-content">
+
+              <strong>
+                Principes fondamentaux
+              </strong>
+
+              <span>
+                Les règles qui doivent rester constantes.
+              </span>
+
+            </div>
+
+            <span class="plan-chevron">
+              +
+            </span>
+
+          </summary>
+
+
+          <div class="plan-section-content">
+
+            <div class="principle-grid">
+
+              <div>
+                <span>01</span>
+                <strong>Patience</strong>
+                <p>
+                  Attendre le scénario prévu plutôt que forcer une entrée.
+                </p>
+              </div>
+
+              <div>
+                <span>02</span>
+                <strong>Discipline</strong>
+                <p>
+                  Exécuter les règles définies avant le trade.
+                </p>
+              </div>
+
+              <div>
+                <span>03</span>
+                <strong>Risque</strong>
+                <p>
+                  Le risque est déterminé avant l'entrée.
+                </p>
+              </div>
+
+              <div>
+                <span>04</span>
+                <strong>Processus</strong>
+                <p>
+                  Évaluer la qualité de l'exécution plutôt que seulement
+                  le résultat individuel.
+                </p>
+              </div>
+
+              <div>
+                <span>05</span>
+                <strong>Journal</strong>
+                <p>
+                  Chaque trade doit produire une information exploitable.
+                </p>
+              </div>
+
+              <div>
+                <span>06</span>
+                <strong>Répétition</strong>
+                <p>
+                  Répéter le même processus pour obtenir des données
+                  comparables.
+                </p>
+              </div>
+
+            </div>
+
+
+            <div class="final-principle">
+
+              <span>
+                RÈGLE FINALE
               </span>
 
               <strong>
-                Dernier Swing Low M15 valide
+                Aucun trade ne vaut la peine de violer son plan.
               </strong>
 
-              <p>
-                Le TP principal est positionné sur une cible structurelle
-                cohérente avec le mouvement attendu.
-              </p>
             </div>
 
+          </div>
+
+        </details>
+
+
+        <!-- =================================================
+             CHECKLIST
+        ================================================== -->
+
+        <section class="panel checklist-panel">
+
+          <div class="panel-header checklist-header">
+
             <div>
-              <span class="tp-direction">
+
+              <h3>
+                Checklist avant entrée
+              </h3>
+
+              <p>
+                Toutes les conditions obligatoires doivent être validées.
+              </p>
+
+            </div>
+
+
+            <div class="checklist-progress-wrap">
+
+              <strong id="plan-checklist-progress">
+                0 / 24
+              </strong>
+
+              <span>
+                conditions validées
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="checklist-body">
+
+
+            <!-- CONTEXTE -->
+
+            <div class="checklist-category">
+
+              <div class="checklist-category-title">
+                <span>01</span>
+                CONTEXTE
+              </div>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="fundamental"
+                >
+
+                <span>
+                  Direction fondamentale identifiée
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="usdBias"
+                >
+
+                <span>
+                  Biais USD / contexte macro cohérent
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="h4"
+                >
+
+                <span>
+                  Analyse H4 effectuée
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="h4Trend"
+                >
+
+                <span>
+                  Tendance / structure H4 définie
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="phase"
+                >
+
+                <span>
+                  Phase du marché identifiée
+                </span>
+
+              </label>
+
+            </div>
+
+
+            <!-- STRUCTURE -->
+
+            <div class="checklist-category">
+
+              <div class="checklist-category-title">
+                <span>02</span>
+                STRUCTURE
+              </div>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="m15"
+                >
+
+                <span>
+                  Analyse M15 effectuée
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="m15Structure"
+                >
+
+                <span>
+                  Structure M15 validée
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="zone"
+                >
+
+                <span>
+                  Zone d'intérêt identifiée
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="validZone"
+                >
+
+                <span>
+                  Zone considérée comme valide
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="zoneContext"
+                >
+
+                <span>
+                  Zone cohérente avec le contexte
+                </span>
+
+              </label>
+
+            </div>
+
+
+            <!-- ZONE -->
+
+            <div class="checklist-category">
+
+              <div class="checklist-category-title">
+                <span>03</span>
+                ZONE & RÉACTION
+              </div>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="returnZone"
+                >
+
+                <span>
+                  Prix revenu dans la zone
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="reaction"
+                >
+
+                <span>
+                  Réaction du prix présente
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="m1"
+                >
+
+                <span>
+                  Confirmation M1 effectuée
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="shift"
+                >
+
+                <span>
+                  Shift / changement de structure confirmé
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="fvg"
+                >
+
+                <span>
+                  FVG / déplacement cohérent si applicable
+                </span>
+
+              </label>
+
+            </div>
+
+
+            <!-- RISK -->
+
+            <div class="checklist-category">
+
+              <div class="checklist-category-title">
+                <span>04</span>
+                RISK MANAGEMENT
+              </div>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="entry"
+                >
+
+                <span>
+                  Entrée clairement définie
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="risk"
+                >
+
+                <span>
+                  Risque monétaire calculé
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="lot"
+                >
+
+                <span>
+                  Lot calculé
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="sl"
+                >
+
+                <span>
+                  Stop Loss défini
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="tp"
+                >
+
+                <span>
+                  Take Profit défini
+                </span>
+
+              </label>
+
+            </div>
+
+
+            <!-- EXECUTION -->
+
+            <div class="checklist-category">
+
+              <div class="checklist-category-title">
+                <span>05</span>
+                EXÉCUTION
+              </div>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="rr"
+                >
+
+                <span>
+                  RR validé
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="noFomo"
+                >
+
+                <span>
+                  Pas de FOMO / pas de poursuite
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="noSlMove"
+                >
+
+                <span>
+                  Règle de SL respectée
+                </span>
+
+              </label>
+
+
+              <label class="trade-check">
+
+                <input
+                  type="checkbox"
+                  data-plan-check="fullPlan"
+                >
+
+                <span>
+                  Plan complet respecté
+                </span>
+
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <!-- TRADE PERMISSION -->
+
+          <div
+            id="trade-permission"
+            class="trade-permission blocked"
+            aria-live="polite"
+          >
+
+            <div
+              class="permission-icon"
+              aria-hidden="true"
+            >
+              !
+            </div>
+
+
+            <div>
+
+              <strong id="trade-permission-title">
+                TRADE NON AUTORISÉ
+              </strong>
+
+              <p id="trade-permission-description">
+                Toutes les conditions doivent être validées avant l'entrée.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- FINAL RULES -->
+
+        <div class="plan-final-rules">
+
+          <div>
+            <strong>Contexte</strong>
+            <span>Comprendre avant d'exécuter.</span>
+          </div>
+
+          <div>
+            <strong>Zone</strong>
+            <span>Attendre le prix.</span>
+          </div>
+
+          <div>
+            <strong>Confirmation</strong>
+            <span>Valider avant l'entrée.</span>
+          </div>
+
+          <div>
+            <strong>Risque</strong>
+            <span>Calculer avant d'entrer.</span>
+          </div>
+
+          <div>
+            <strong>Discipline</strong>
+            <span>Respecter le plan.</span>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- =====================================================
+       CAPITAL MODAL
+  ====================================================== -->
+
+  <div
+    id="capital-modal"
+    class="modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="capital-modal-title"
+    aria-hidden="true"
+  >
+
+    <div class="modal small-modal">
+
+      <div class="modal-header">
+
+        <div>
+
+          <h3 id="capital-modal-title">
+            Nouveau capital
+          </h3>
+
+          <p>
+            Définis ton capital et ton niveau de risque.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          id="close-capital-modal"
+          class="close-button"
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <form id="capital-form">
+
+        <input
+          type="hidden"
+          id="capital-id"
+        >
+
+
+        <div class="form-group">
+
+          <label for="capital-name">
+            Nom du capital
+          </label>
+
+          <input
+            type="text"
+            id="capital-name"
+            placeholder="Ex : Capital Principal"
+            autocomplete="off"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="capital-initial">
+            Capital initial
+          </label>
+
+          <input
+            type="number"
+            id="capital-initial"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            placeholder="10000"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="capital-risk-mode">
+            Mode de risque
+          </label>
+
+          <select id="capital-risk-mode">
+
+            <option value="percentage">
+              Pourcentage du capital
+            </option>
+
+            <option value="fixed">
+              Montant fixe
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          id="capital-risk-percent-group"
+          class="form-group"
+        >
+
+          <label for="capital-risk-percent">
+            Risque par trade (%)
+          </label>
+
+          <input
+            type="number"
+            id="capital-risk-percent"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            value="1"
+          >
+
+        </div>
+
+
+        <div
+          id="capital-risk-amount-group"
+          class="form-group hidden"
+        >
+
+          <label for="capital-risk-amount">
+            Risque fixe par trade
+          </label>
+
+          <input
+            type="number"
+            id="capital-risk-amount"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            placeholder="100"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="capital-default-rr">
+            RR par défaut
+          </label>
+
+          <select id="capital-default-rr">
+
+            <option value="1">RR1</option>
+            <option value="2" selected>RR2</option>
+            <option value="3">RR3</option>
+            <option value="4">RR4</option>
+            <option value="5">RR5</option>
+            <option value="6">RR6</option>
+            <option value="7">RR7</option>
+            <option value="8">RR8</option>
+            <option value="9">RR9</option>
+            <option value="10">RR10</option>
+
+          </select>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            id="cancel-capital"
+            class="secondary-button"
+          >
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            class="primary-button"
+          >
+            Enregistrer
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       TRADE MODAL
+  ====================================================== -->
+
+  <div
+    id="trade-modal"
+    class="modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="trade-modal-title"
+    aria-hidden="true"
+  >
+
+    <div class="modal">
+
+      <div class="modal-header">
+
+        <div>
+
+          <h3 id="trade-modal-title">
+            Ajouter un trade
+          </h3>
+
+          <p>
+            Calcule automatiquement le risque, le lot et le résultat.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          id="close-trade-modal"
+          class="close-button"
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <form id="trade-form">
+
+        <!-- ACTIVE CAPITAL -->
+
+        <div class="trade-capital-banner">
+
+          <div>
+
+            <span>
+              Capital
+            </span>
+
+            <strong id="trade-active-capital-name">
+              —
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Risque
+            </span>
+
+            <strong id="trade-risk-display">
+              —
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Balance
+            </span>
+
+            <strong id="trade-balance-display">
+              —
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- GENERAL -->
+
+        <div class="form-section-title">
+          Informations du trade
+        </div>
+
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="trade-date">
+              Date et heure
+            </label>
+
+            <input
+              type="datetime-local"
+              id="trade-date"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="trade-asset">
+              Actif
+            </label>
+
+            <select
+              id="trade-asset"
+              required
+            >
+
+              <option value="XAUUSD">
+                XAUUSD
+              </option>
+
+              <option value="USDCAD">
+                USDCAD
+              </option>
+
+              <option value="EURUSD">
+                EURUSD
+              </option>
+
+              <option value="NZDUSD">
+                NZDUSD
+              </option>
+
+              <option value="GBPUSD">
+                GBPUSD
+              </option>
+
+              <option value="USDJPY">
+                USDJPY
+              </option>
+
+              <option value="AUDUSD">
+                AUDUSD
+              </option>
+
+              <option value="USDCHF">
+                USDCHF
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="trade-direction">
+              Direction
+            </label>
+
+            <select
+              id="trade-direction"
+              required
+            >
+
+              <option value="BUY">
                 BUY
-              </span>
+              </option>
 
-              <strong>
-                Dernier Swing High M15 valide
-              </strong>
+              <option value="SELL">
+                SELL
+              </option>
 
-              <p>
-                Le TP principal est positionné sur une cible structurelle
-                cohérente avec le mouvement attendu.
-              </p>
-            </div>
+            </select>
 
           </div>
 
 
-          <div class="plan-rule">
-            <strong>Principe :</strong>
-            TP basé sur la structure, pas sur une distance arbitraire.
+          <div class="form-group">
+
+            <label for="trade-session">
+              Session
+            </label>
+
+            <select id="trade-session">
+
+              <option value="Asiatique">
+                Asiatique
+              </option>
+
+              <option value="Londres">
+                Londres
+              </option>
+
+              <option value="New York">
+                New York
+              </option>
+
+              <option value="Asie + Londres">
+                Asie + Londres
+              </option>
+
+              <option value="Londres + New York">
+                Londres + New York
+              </option>
+
+              <option value="Toutes sessions">
+                Toutes sessions
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="trade-timeframe">
+              Timeframe
+            </label>
+
+            <select id="trade-timeframe">
+
+              <option value="M1">
+                M1
+              </option>
+
+              <option value="M5">
+                M5
+              </option>
+
+              <option value="M15" selected>
+                M15
+              </option>
+
+              <option value="M30">
+                M30
+              </option>
+
+              <option value="H1">
+                H1
+              </option>
+
+              <option value="H4">
+                H4
+              </option>
+
+              <option value="D1">
+                D1
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="trade-setup">
+              Setup
+            </label>
+
+            <select id="trade-setup">
+
+              <option value="">
+                Sélectionner
+              </option>
+
+              <option value="ZS OA">
+                ZS OA
+              </option>
+
+              <option value="LDP + FIBO 50">
+                LDP + FIBO 50
+              </option>
+
+              <option value="LDP + QM">
+                LDP + QM
+              </option>
+
+              <option value="SSM1">
+                SSM1
+              </option>
+
+              <option value="SSM2">
+                SSM2
+              </option>
+
+              <option value="SSM3">
+                SSM3
+              </option>
+
+              <option value="SBM1">
+                SBM1
+              </option>
+
+              <option value="SBM2">
+                SBM2
+              </option>
+
+              <option value="SBM3">
+                SBM3
+              </option>
+
+              <option value="OB">
+                OB
+              </option>
+
+              <option value="BB">
+                BB
+              </option>
+
+            </select>
+
           </div>
 
         </div>
 
-      </details>
+
+        <!-- CALCULATION -->
+
+        <div class="form-section-title">
+          Plan et calcul
+        </div>
 
 
-      <!-- 11 BE -->
+        <div class="form-grid">
 
-      <details class="plan-section">
+          <div class="form-group">
 
-        <summary>
+            <label for="trade-entry">
+              Prix d'entrée
+            </label>
 
-          <span class="plan-number">
-            11
-          </span>
+            <input
+              type="number"
+              id="trade-entry"
+              min="0"
+              step="any"
+              inputmode="decimal"
+              placeholder="2000.00"
+              required
+            >
 
-          <div class="plan-summary-content">
+          </div>
 
-            <strong>
-              Gestion du trade — BE
-            </strong>
+
+          <div class="form-group">
+
+            <label for="trade-sl">
+              Stop Loss
+            </label>
+
+            <input
+              type="number"
+              id="trade-sl"
+              min="0"
+              step="any"
+              inputmode="decimal"
+              placeholder="1995.00"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="trade-rr">
+              Risk / Reward
+            </label>
+
+            <select
+              id="trade-rr"
+              required
+            >
+
+              <option value="1">RR1</option>
+              <option value="2" selected>RR2</option>
+              <option value="3">RR3</option>
+              <option value="4">RR4</option>
+              <option value="5">RR5</option>
+              <option value="6">RR6</option>
+              <option value="7">RR7</option>
+              <option value="8">RR8</option>
+              <option value="9">RR9</option>
+              <option value="10">RR10</option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="trade-result">
+              Résultat
+            </label>
+
+            <select
+              id="trade-result"
+              required
+            >
+
+              <option value="TP">
+                TP
+              </option>
+
+              <option value="SL">
+                SL
+              </option>
+
+              <option value="BE">
+                BE
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- AUTOMATIC CALCULATION -->
+
+        <div class="trade-calculation-grid">
+
+          <div class="calculation-result">
 
             <span>
-              Protéger une partie du mouvement sans étouffer le trade.
+              Risque
             </span>
 
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="management-timeline">
-
-            <div class="management-step">
-              <strong>+2R</strong>
-              <span>
-                Possibilité de déplacer le SL à +1R.
-              </span>
-            </div>
-
-            <div class="management-line"></div>
-
-            <div class="management-step">
-              <strong>+3R</strong>
-              <span>
-                Possibilité de conserver le SL à +1R selon la structure.
-              </span>
-            </div>
-
-          </div>
-
-
-          <div class="plan-rule">
-            <strong>Objectif :</strong>
-            protéger une partie du gain tout en laissant suffisamment
-            d'espace au prix pour atteindre le TP.
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 12 EXECUTION -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            12
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Règles générales d'exécution
+            <strong id="trade-risk-money">
+              $0.00
             </strong>
+
+          </div>
+
+
+          <div class="calculation-result">
 
             <span>
-              Les situations dans lesquelles je n'entre pas.
+              SL en pips
             </span>
 
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="rule-columns">
-
-            <div class="rule-list negative">
-
-              <h4>
-                PAS DE TRADE SI...
-              </h4>
-
-              <ul>
-                <li>Fondamentale incertaine</li>
-                <li>H4 trop ambigu</li>
-                <li>M15 peu clair</li>
-                <li>Aucune zone valide</li>
-                <li>Prix pas encore revenu dans la zone</li>
-                <li>Aucun Structural Shift M1</li>
-                <li>Conditions d'entrée non réunies</li>
-                <li>RR non acceptable selon les règles</li>
-                <li>Setup basé uniquement sur une anticipation</li>
-              </ul>
-
-            </div>
-
-
-            <div class="rule-list positive">
-
-              <h4>
-                JE NE DOIS JAMAIS...
-              </h4>
-
-              <ul>
-                <li>Chasser le prix</li>
-                <li>Déplacer le SL pour éviter une perte</li>
-                <li>Entrer simplement parce qu'un OB est touché</li>
-                <li>Multiplier les entrées après une perte</li>
-                <li>Prendre un trade hors plan</li>
-                <li>Modifier mes règles sous l'effet de l'émotion</li>
-              </ul>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 13 PROCESS -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            13
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Processus complet
+            <strong id="trade-sl-pips">
+              0
             </strong>
+
+          </div>
+
+
+          <div class="calculation-result">
 
             <span>
-              La séquence que je dois respecter avant et pendant chaque trade.
+              Lot
             </span>
 
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="process-flow">
-
-            <div>01<br><strong>Fondamentale</strong></div>
-            <span>↓</span>
-            <div>02<br><strong>USD / DXY</strong></div>
-            <span>↓</span>
-            <div>03<br><strong>H4</strong></div>
-            <span>↓</span>
-            <div>04<br><strong>Distribution / Correction</strong></div>
-            <span>↓</span>
-            <div>05<br><strong>M15 Structure</strong></div>
-            <span>↓</span>
-            <div>06<br><strong>M15 Zones</strong></div>
-            <span>↓</span>
-            <div>07<br><strong>Retour zone</strong></div>
-            <span>↓</span>
-            <div>08<br><strong>M1</strong></div>
-            <span>↓</span>
-            <div>09<br><strong>Réaction</strong></div>
-            <span>↓</span>
-            <div>10<br><strong>Structural Shift</strong></div>
-            <span>↓</span>
-            <div>11<br><strong>FVG</strong></div>
-            <span>↓</span>
-            <div>12<br><strong>Entrée</strong></div>
-            <span>↓</span>
-            <div>13<br><strong>SL Invalidation</strong></div>
-            <span>↓</span>
-            <div>14<br><strong>TP M15</strong></div>
-            <span>↓</span>
-            <div>15<br><strong>+2R / +3R</strong></div>
-            <span>↓</span>
-            <div>16<br><strong>BE +1R</strong></div>
-            <span>↓</span>
-            <div>17<br><strong>TP / SL</strong></div>
-
-          </div>
-
-        </div>
-
-      </details>
-
-
-      <!-- 14 PRINCIPES -->
-
-      <details class="plan-section">
-
-        <summary>
-
-          <span class="plan-number">
-            14
-          </span>
-
-          <div class="plan-summary-content">
-
-            <strong>
-              Principes fondamentaux
+            <strong id="trade-lot">
+              0.00
             </strong>
+
+          </div>
+
+
+          <div class="calculation-result">
 
             <span>
-              Les règles qui résument tout le système.
+              TP calculé
             </span>
 
-          </div>
-
-          <span class="plan-chevron">
-            +
-          </span>
-
-        </summary>
-
-
-        <div class="plan-section-content">
-
-          <div class="principle-grid">
-
-            <div>
-              <span>01</span>
-              <strong>Pas d'anticipation</strong>
-              <p>
-                J'attends la confirmation prévue par mon système.
-              </p>
-            </div>
-
-            <div>
-              <span>02</span>
-              <strong>M15 = localisation</strong>
-              <p>
-                La zone M15 représente un emplacement potentiel.
-              </p>
-            </div>
-
-            <div>
-              <span>03</span>
-              <strong>M1 = confirmation</strong>
-              <p>
-                Le M1 sert à confirmer le timing d'entrée.
-              </p>
-            </div>
-
-            <div>
-              <span>04</span>
-              <strong>SL = invalidation</strong>
-              <p>
-                Le SL définit le niveau où le scénario n'est plus valide.
-              </p>
-            </div>
-
-            <div>
-              <span>05</span>
-              <strong>TP = structure M15</strong>
-              <p>
-                La cible principale vient de la structure M15.
-              </p>
-            </div>
-
-            <div>
-              <span>06</span>
-              <strong>Risk management</strong>
-              <p>
-                La taille de position dépend du risque accepté.
-              </p>
-            </div>
-
-          </div>
-
-
-          <div class="final-principle">
-
-            <span>
-              RÈGLE CENTRALE
-            </span>
-
-            <strong>
-              « Je ne cherche pas à anticiper l'entrée.
-              J'attends que le marché me donne la confirmation prévue. »
+            <strong id="trade-tp-display">
+              —
             </strong>
 
           </div>
 
         </div>
 
-      </details>
-
-
-      <!-- 15 CHECKLIST -->
-
-      <div class="panel checklist-panel">
-
-        <div class="panel-header checklist-header">
-
-          <div>
-
-            <span class="plan-eyebrow">
-              AVANT CHAQUE TRADE
-            </span>
-
-            <h3>
-              Checklist d'autorisation
-            </h3>
-
-            <p>
-              Toutes les conditions essentielles doivent être validées.
-            </p>
-
-          </div>
-
-          <div class="checklist-progress-wrap">
-
-            <strong id="plan-checklist-progress">
-              0 / 20
-            </strong>
-
-            <span>
-              conditions
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="checklist-body">
-
-          <!-- CONTEXTE -->
-
-          <div class="checklist-category">
-
-            <div class="checklist-category-title">
-              <span>01</span>
-              CONTEXTE
-            </div>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="fundamental">
-              <span>Fondamentale analysée</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="usdBias">
-              <span>USD / DXY bias défini</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="h4">
-              <span>H4 analysé</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="h4Trend">
-              <span>Tendance H4 identifiée</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="phase">
-              <span>Distribution / correction identifiée</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="m15">
-              <span>M15 analysé</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="m15Structure">
-              <span>Structure M15 claire</span>
-            </label>
-
-          </div>
-
-
-          <!-- ZONE -->
-
-          <div class="checklist-category">
-
-            <div class="checklist-category-title">
-              <span>02</span>
-              ZONE
-            </div>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="zone">
-              <span>Zone M15 identifiée</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="validZone">
-              <span>OB / BB / QM + LDP / FVG / IFVG valide</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="zoneContext">
-              <span>Zone cohérente avec le contexte</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="returnZone">
-              <span>Prix revenu dans la zone</span>
-            </label>
-
-          </div>
-
-
-          <!-- CONFIRMATION -->
-
-          <div class="checklist-category">
-
-            <div class="checklist-category-title">
-              <span>03</span>
-              CONFIRMATION M1
-            </div>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="reaction">
-              <span>Réaction du prix</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="m1">
-              <span>Passage sur M1</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="shift">
-              <span>Structural Shift / CHoCH confirmé</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="fvg">
-              <span>FVG formée</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="entry">
-              <span>Entrée identifiée</span>
-            </label>
-
-          </div>
-
-
-          <!-- RISK -->
-
-          <div class="checklist-category">
-
-            <div class="checklist-category-title">
-              <span>04</span>
-              RISK MANAGEMENT
-            </div>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="risk">
-              <span>Risque calculé</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="lot">
-              <span>Taille de position calculée</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="sl">
-              <span>SL placé au niveau d'invalidation</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="tp">
-              <span>TP défini sur la structure M15</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="rr">
-              <span>Risk / Reward acceptable</span>
-            </label>
-
-          </div>
-
-
-          <!-- EXECUTION -->
-
-          <div class="checklist-category">
-
-            <div class="checklist-category-title">
-              <span>05</span>
-              EXÉCUTION
-            </div>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="noFomo">
-              <span>Pas de trade impulsif / FOMO</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="noSlMove">
-              <span>Pas de déplacement injustifié du SL</span>
-            </label>
-
-            <label class="trade-check">
-              <input type="checkbox" data-plan-check="fullPlan">
-              <span>Plan entièrement respecté</span>
-            </label>
-
-          </div>
-
-        </div>
-
-
-        <div class="trade-permission" id="trade-permission">
-
-          <div class="permission-icon">
-            !
-          </div>
-
-          <div>
-
-            <strong id="trade-permission-title">
-              PAS DE TRADE
-            </strong>
-
-            <p id="trade-permission-description">
-              Complète toutes les conditions essentielles avant d'envisager une entrée.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="plan-final-rules">
-
-        <div>
-          <strong>Zone M15</strong>
-          <span>Localisation potentielle</span>
-        </div>
-
-        <div>
-          <strong>M1</strong>
-          <span>Confirmation d'entrée</span>
-        </div>
-
-        <div>
-          <strong>SL</strong>
-          <span>Invalidation du scénario</span>
-        </div>
-
-        <div>
-          <strong>TP</strong>
-          <span>Structure M15</span>
-        </div>
-
-        <div>
-          <strong>Risque</strong>
-          <span>Taille de position</span>
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-</div>
-
-
-<!-- ================= MODAL CAPITAL ================= -->
-
-<div
-  class="modal-overlay"
-  id="capital-modal"
->
-
-  <div class="modal small-modal">
-
-    <div class="modal-header">
-
-      <div>
-
-        <h3 id="capital-modal-title">
-          Nouveau capital
-        </h3>
-
-        <p>
-          Définis les règles de gestion de ce capital.
-        </p>
-
-      </div>
-
-
-      <button
-        class="close-button"
-        id="close-capital-modal"
-      >
-        ×
-      </button>
-
-    </div>
-
-
-    <form id="capital-form">
-
-      <input
-        type="hidden"
-        id="capital-id"
-      >
-
-
-      <div class="form-group">
-
-        <label>
-          Nom du capital
-        </label>
 
         <input
-          type="text"
-          id="capital-name"
-          placeholder="Ex : Capital Principal"
-          required
+          type="hidden"
+          id="trade-tp"
         >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Capital initial ($)
-        </label>
 
         <input
-          type="number"
-          id="capital-initial"
-          min="0.01"
-          step="0.01"
-          required
+          type="hidden"
+          id="trade-lot-value"
         >
 
-      </div>
 
+        <!-- BREAK EVEN -->
 
-      <div class="form-group">
-
-        <label>
-          Risque par trade
-        </label>
-
-        <select id="capital-risk-mode">
-
-          <option value="percentage">
-            Pourcentage du capital (%)
-          </option>
-
-          <option value="fixed">
-            Montant fixe ($)
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div
-        class="form-group"
-        id="capital-risk-percent-group"
-      >
-
-        <label>
-          Risque (%)
-        </label>
-
-        <input
-          type="number"
-          id="capital-risk-percent"
-          value="1"
-          min="0"
-          step="0.01"
+        <div
+          id="be-exit-group"
+          class="form-group hidden"
         >
 
-      </div>
-
-
-      <div
-        class="form-group hidden"
-        id="capital-risk-amount-group"
-      >
-
-        <label>
-          Risque fixe ($)
-        </label>
-
-        <input
-          type="number"
-          id="capital-risk-amount"
-          min="0"
-          step="0.01"
-        >
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          RR par défaut
-        </label>
-
-        <select id="capital-default-rr">
-
-          <option value="1">RR 1</option>
-          <option value="2" selected>RR 2</option>
-          <option value="3">RR 3</option>
-          <option value="4">RR 4</option>
-          <option value="5">RR 5</option>
-          <option value="6">RR 6</option>
-          <option value="7">RR 7</option>
-          <option value="8">RR 8</option>
-          <option value="9">RR 9</option>
-          <option value="10">RR 10</option>
-
-        </select>
-
-      </div>
-
-
-      <div class="modal-actions">
-
-        <button
-          type="button"
-          class="secondary-button"
-          id="cancel-capital"
-        >
-          Annuler
-        </button>
-
-        <button
-          type="submit"
-          class="primary-button"
-        >
-          Enregistrer
-        </button>
-
-      </div>
-
-    </form>
-
-  </div>
-
-</div>
-
-
-<!-- ================= MODAL TRADE ================= -->
-
-<div
-  class="modal-overlay"
-  id="trade-modal"
->
-
-  <div class="modal">
-
-    <div class="modal-header">
-
-      <div>
-
-        <h3>
-          Ajouter un trade
-        </h3>
-
-        <p>
-          Les calculs de risque, lot, TP, pips et P&L sont automatiques.
-        </p>
-
-      </div>
-
-
-      <button
-        class="close-button"
-        id="close-trade-modal"
-      >
-        ×
-      </button>
-
-    </div>
-
-
-    <form id="trade-form">
-
-
-      <div
-        class="trade-capital-banner"
-        id="trade-capital-banner"
-      >
-
-        <div>
-
-          <span>
-            Capital actif
-          </span>
-
-          <strong id="trade-active-capital-name">
-            Aucun capital
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Risque
-          </span>
-
-          <strong id="trade-risk-display">
-            $0.00
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Balance
-          </span>
-
-          <strong id="trade-balance-display">
-            $0.00
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="form-section-title">
-        Informations du trade
-      </div>
-
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label>
-            Date
-          </label>
-
-          <input
-            type="datetime-local"
-            id="trade-date"
-            required
-          >
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Actif
-          </label>
-
-          <select id="trade-asset">
-
-            <option>XAUUSD</option>
-            <option>USDCAD</option>
-            <option>EURUSD</option>
-            <option>NZDUSD</option>
-            <option>GBPUSD</option>
-            <option>USDJPY</option>
-            <option>AUDUSD</option>
-            <option>USDCHF</option>
-
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Direction
-          </label>
-
-          <select id="trade-direction">
-
-            <option value="BUY">
-              BUY
-            </option>
-
-            <option value="SELL">
-              SELL
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Session
-          </label>
-
-          <select id="trade-session">
-
-            <option>Asiatique</option>
-            <option>Londres</option>
-            <option>New York</option>
-            <option>Asie + Londres</option>
-            <option>Londres + New York</option>
-            <option>Toutes sessions</option>
-
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Timeframe
-          </label>
-
-          <select id="trade-timeframe">
-
-            <option>M1</option>
-            <option>M5</option>
-            <option selected>M15</option>
-            <option>M30</option>
-            <option>H1</option>
-            <option>H4</option>
-            <option>D1</option>
-
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Setup
-          </label>
-
-          <select id="trade-setup">
-
-            <option value="">
-              Sélectionner un setup
-            </option>
-
-            <option>ZS OA</option>
-            <option>LDP + FIBO 50</option>
-            <option>LDP + QM</option>
-            <option>SSM1</option>
-            <option>SSM2</option>
-            <option>SSM3</option>
-            <option>SBM1</option>
-            <option>SBM2</option>
-            <option>SBM3</option>
-            <option>OB</option>
-            <option>BB</option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-
-      <div class="form-section-title">
-        Plan et calcul automatique
-      </div>
-
-
-      <div class="form-grid">
-
-        <div class="form-group">
-
-          <label>
-            Prix d'entrée
+          <label for="trade-be-exit">
+            Prix de sortie BE
           </label>
 
           <input
             type="number"
-            id="trade-entry"
-            step="0.00001"
+            id="trade-be-exit"
             min="0"
-            required
+            step="any"
+            inputmode="decimal"
+            placeholder="Prix de sortie"
           >
 
+          <span class="field-help">
+            Requis lorsque le résultat du trade est BE.
+          </span>
+
+        </div>
+
+
+        <!-- PREVIEW -->
+
+        <div class="trade-result-preview">
+
+          <div>
+
+            <span>
+              Prix de sortie
+            </span>
+
+            <strong id="trade-exit-display">
+              —
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Pips réalisés
+            </span>
+
+            <strong id="trade-realized-pips">
+              0
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              P&L
+            </span>
+
+            <strong id="trade-pnl-display">
+              $0.00
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Résultat R
+            </span>
+
+            <strong id="trade-r-display">
+              0.00R
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- JOURNAL NOTES -->
+
+        <div class="form-section-title">
+          Journal
         </div>
 
 
         <div class="form-group">
 
-          <label>
-            Stop Loss
+          <label for="trade-entry-reason">
+            Raison de l'entrée
           </label>
 
-          <input
-            type="number"
-            id="trade-sl"
-            step="0.00001"
-            min="0"
-            required
+          <textarea
+            id="trade-entry-reason"
+            placeholder="Pourquoi cette entrée respectait-elle ton plan ?"
+          ></textarea>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="trade-notes">
+            Notes
+          </label>
+
+          <textarea
+            id="trade-notes"
+            placeholder="Observations après le trade..."
+          ></textarea>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            id="cancel-trade"
+            class="secondary-button"
           >
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            class="primary-button"
+          >
+            Enregistrer le trade
+          </button>
 
         </div>
 
+      </form>
 
-        <div class="form-group">
-
-          <label>
-            RR choisi
-          </label>
-
-          <select id="trade-rr">
-
-            <option value="1">RR 1</option>
-            <option value="2">RR 2</option>
-            <option value="3">RR 3</option>
-            <option value="4">RR 4</option>
-            <option value="5">RR 5</option>
-            <option value="6">RR 6</option>
-            <option value="7">RR 7</option>
-            <option value="8">RR 8</option>
-            <option value="9">RR 9</option>
-            <option value="10">RR 10</option>
-
-          </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-          <label>
-            Résultat
-          </label>
-
-          <select id="trade-result">
-
-            <option value="TP">
-              TP
-            </option>
-
-            <option value="SL">
-              SL
-            </option>
-
-            <option value="BE">
-              BE
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-
-      <div class="trade-calculation-grid">
-
-        <div class="calculation-result">
-
-          <span>
-            Risque
-          </span>
-
-          <strong id="trade-risk-money">
-            $0.00
-          </strong>
-
-        </div>
-
-
-        <div class="calculation-result">
-
-          <span>
-            Distance SL
-          </span>
-
-          <strong id="trade-sl-pips">
-            0 pips
-          </strong>
-
-        </div>
-
-
-        <div class="calculation-result">
-
-          <span>
-            Lot automatique
-          </span>
-
-          <strong id="trade-lot">
-            0.00 lot
-          </strong>
-
-        </div>
-
-
-        <div class="calculation-result">
-
-          <span>
-            Take Profit
-          </span>
-
-          <strong id="trade-tp-display">
-            —
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <input
-        type="hidden"
-        id="trade-tp"
-      >
-
-      <input
-        type="hidden"
-        id="trade-lot-value"
-      >
-
-
-      <div
-        id="be-exit-group"
-        class="form-group hidden"
-      >
-
-        <label>
-          Prix de sortie BE
-        </label>
-
-        <input
-          type="number"
-          id="trade-be-exit"
-          step="0.00001"
-          min="0"
-          placeholder="Prix réel de clôture"
-        >
-
-        <small class="field-help">
-          Obligatoire uniquement lorsque le résultat est BE.
-        </small>
-
-      </div>
-
-
-      <div class="trade-result-preview">
-
-        <div>
-
-          <span>
-            Prix de sortie
-          </span>
-
-          <strong id="trade-exit-display">
-            —
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Pips réalisés
-          </span>
-
-          <strong id="trade-realized-pips">
-            0 pips
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            P&L
-          </span>
-
-          <strong id="trade-pnl-display">
-            $0.00
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            R réalisé
-          </span>
-
-          <strong id="trade-r-display">
-            0.00R
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="form-section-title">
-        Journal
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Raison de l'entrée
-        </label>
-
-        <textarea
-          id="trade-entry-reason"
-          placeholder="Pourquoi as-tu pris ce trade ?"
-        ></textarea>
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>
-          Notes
-        </label>
-
-        <textarea
-          id="trade-notes"
-          placeholder="Notes supplémentaires..."
-        ></textarea>
-
-      </div>
-
-
-      <div class="modal-actions">
-
-        <button
-          type="button"
-          class="secondary-button"
-          id="cancel-trade"
-        >
-          Annuler
-        </button>
-
-        <button
-          type="submit"
-          class="primary-button"
-        >
-          Enregistrer le trade
-        </button>
-
-      </div>
-
-    </form>
+    </div>
 
   </div>
 
-</div>
+
+  <!-- =====================================================
+       SCREEN READER HELPER
+  ====================================================== -->
+
+  <div
+    id="app-status"
+    class="sr-only"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
 
 
-<script src="app.js"></script>
+  <!-- =====================================================
+       APP JAVASCRIPT
+  ====================================================== -->
+
+  <script src="app.js"></script>
 
 </body>
 </html>
