@@ -1,3 +1,7 @@
+/* =========================================================
+   TRADING PLAN — V3 APP READY
+========================================================= */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,10 +22,14 @@
   --warning: #fbbf24;
   --blue: #60a5fa;
   --radius: 12px;
+  --sidebar-width: 245px;
+  --mobile-sidebar-width: 280px;
+  --touch-size: 44px;
 }
 
 html {
   scroll-behavior: smooth;
+  background: var(--bg);
 }
 
 body {
@@ -29,6 +37,14 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 button,
@@ -40,23 +56,51 @@ textarea {
 
 button {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
 }
 
 .hidden {
   display: none !important;
 }
 
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 .app {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
 }
 
 
-/* SIDEBAR */
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 .sidebar {
-  width: 245px;
+  width: var(--sidebar-width);
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg-secondary);
   border-right: 1px solid var(--border);
   display: flex;
@@ -66,6 +110,9 @@ button {
   left: 0;
   top: 0;
   bottom: 0;
+  z-index: 900;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .logo {
@@ -73,11 +120,13 @@ button {
   align-items: center;
   gap: 11px;
   padding: 5px 8px 28px;
+  flex-shrink: 0;
 }
 
 .logo-icon {
   width: 38px;
   height: 38px;
+  min-width: 38px;
   border-radius: 10px;
   background: var(--primary);
   color: #06100a;
@@ -106,20 +155,29 @@ button {
 
 .nav-button {
   width: 100%;
+  min-height: var(--touch-size);
   border: 0;
   background: transparent;
   color: var(--muted);
-  padding: 11px 12px;
+  padding: 10px 12px;
   border-radius: 9px;
   text-align: left;
   display: flex;
   align-items: center;
   gap: 11px;
-  transition: 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.nav-button strong {
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .nav-button span {
   width: 20px;
+  min-width: 20px;
   text-align: center;
   font-size: 17px;
 }
@@ -144,23 +202,40 @@ button {
   gap: 4px;
 }
 
+.sidebar-overlay {
+  display: none;
+}
 
-/* MAIN */
+
+/* =========================================================
+   MAIN
+========================================================= */
 
 .main {
-  width: calc(100% - 245px);
-  margin-left: 245px;
+  width: calc(100% - var(--sidebar-width));
+  margin-left: var(--sidebar-width);
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 0 30px 40px;
+  overflow-x: hidden;
 }
 
 .header {
   min-height: 86px;
+  padding-top: env(safe-area-inset-top);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 30px;
+  gap: 20px;
+}
+
+.header-left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .header h2 {
@@ -176,13 +251,31 @@ button {
 .header-actions {
   color: var(--muted);
   font-size: 12px;
+  white-space: nowrap;
+}
+
+.mobile-menu-button {
+  display: none;
+  width: var(--touch-size);
+  height: var(--touch-size);
+  min-width: var(--touch-size);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel);
+  color: var(--text);
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
 }
 
 
-/* PAGES */
+/* =========================================================
+   PAGES
+========================================================= */
 
 .page {
   display: none;
+  min-width: 0;
 }
 
 .page.active {
@@ -211,28 +304,42 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 
-/* BUTTONS */
+/* =========================================================
+   BUTTONS
+========================================================= */
 
 .primary-button,
 .secondary-button {
-  border: 0;
+  min-height: 42px;
   border-radius: 8px;
   padding: 10px 15px;
   font-weight: 600;
   font-size: 13px;
-  transition: 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.1s;
 }
 
 .primary-button {
+  border: 0;
   background: var(--primary);
   color: #06100a;
 }
 
 .primary-button:hover {
   background: var(--primary-dark);
+}
+
+.primary-button:active,
+.secondary-button:active,
+.icon-button:active,
+.nav-button:active {
+  transform: translateY(1px);
 }
 
 .secondary-button {
@@ -246,19 +353,29 @@ button {
 }
 
 .close-button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   border: 0;
   background: transparent;
   color: var(--muted);
   font-size: 28px;
   line-height: 1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-button:hover {
   color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 
-/* SELECTORS */
+/* =========================================================
+   SELECTORS
+========================================================= */
 
 .dashboard-capital-selector,
 .dashboard-capital-selector label {
@@ -274,6 +391,7 @@ button {
 
 .dashboard-capital-selector select,
 .compact-select {
+  min-height: 42px;
   background: #0d1218;
   color: var(--text);
   border: 1px solid var(--border);
@@ -282,8 +400,15 @@ button {
   outline: none;
 }
 
+.dashboard-capital-selector select:focus,
+.compact-select:focus {
+  border-color: rgba(74, 222, 128, 0.6);
+}
 
-/* CARDS */
+
+/* =========================================================
+   CARDS
+========================================================= */
 
 .cards {
   display: grid;
@@ -298,6 +423,7 @@ button {
   border-radius: var(--radius);
   padding: 18px;
   min-height: 125px;
+  min-width: 0;
 }
 
 .card-label {
@@ -311,6 +437,7 @@ button {
   display: block;
   font-size: 24px;
   margin-bottom: 7px;
+  overflow-wrap: anywhere;
 }
 
 .card small {
@@ -319,7 +446,9 @@ button {
 }
 
 
-/* PANELS */
+/* =========================================================
+   PANELS
+========================================================= */
 
 .panel {
   background: var(--panel);
@@ -327,6 +456,7 @@ button {
   border-radius: var(--radius);
   margin-bottom: 18px;
   overflow: hidden;
+  min-width: 0;
 }
 
 .panel-header {
@@ -347,10 +477,13 @@ button {
 .panel-header p {
   color: var(--muted);
   font-size: 11px;
+  line-height: 1.5;
 }
 
 
-/* EMPTY STATE */
+/* =========================================================
+   EMPTY STATE
+========================================================= */
 
 .empty-state {
   background: var(--panel);
@@ -370,18 +503,30 @@ button {
 .empty-state p {
   color: var(--muted);
   font-size: 12px;
+  line-height: 1.6;
   margin-bottom: 18px;
 }
 
 
-/* CHART */
+/* =========================================================
+   CHART
+========================================================= */
 
 .equity-chart {
+  width: 100%;
   min-height: 250px;
   padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.equity-chart svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
 }
 
 .empty-chart {
@@ -390,11 +535,16 @@ button {
 }
 
 
-/* TABLE */
+/* =========================================================
+   TABLE
+========================================================= */
 
 .table-container {
   width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 table {
@@ -434,10 +584,17 @@ tbody tr:hover {
 }
 
 .delete-button {
+  width: 40px;
+  height: 40px;
   border: 0;
+  border-radius: 8px;
   background: transparent;
   color: var(--danger);
   font-size: 16px;
+}
+
+.delete-button:hover {
+  background: rgba(248, 113, 113, 0.08);
 }
 
 .result-tp {
@@ -461,7 +618,9 @@ tbody tr:hover {
 }
 
 
-/* GLOBAL PERFORMANCE */
+/* =========================================================
+   GLOBAL PERFORMANCE
+========================================================= */
 
 .global-performance-grid {
   display: grid;
@@ -475,6 +634,7 @@ tbody tr:hover {
   border: 1px solid var(--border);
   border-radius: 9px;
   padding: 15px;
+  min-width: 0;
 }
 
 .global-stat span {
@@ -486,10 +646,13 @@ tbody tr:hover {
 
 .global-stat strong {
   font-size: 18px;
+  overflow-wrap: anywhere;
 }
 
 
-/* FORMS */
+/* =========================================================
+   FORMS
+========================================================= */
 
 .form-grid {
   display: grid;
@@ -502,6 +665,7 @@ tbody tr:hover {
   flex-direction: column;
   gap: 7px;
   margin-bottom: 15px;
+  min-width: 0;
 }
 
 .form-group label {
@@ -513,6 +677,7 @@ tbody tr:hover {
 .form-group select,
 .form-group textarea {
   width: 100%;
+  min-height: 42px;
   background: #0d1218;
   color: var(--text);
   border: 1px solid var(--border);
@@ -532,6 +697,11 @@ tbody tr:hover {
   resize: vertical;
 }
 
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #5f6b79;
+}
+
 .panel > .form-grid,
 .panel > .form-group,
 .panel > .checklist {
@@ -544,7 +714,9 @@ tbody tr:hover {
 }
 
 
-/* CAPITALS */
+/* =========================================================
+   CAPITALS
+========================================================= */
 
 .capital-overview {
   display: grid;
@@ -558,6 +730,7 @@ tbody tr:hover {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px;
+  min-width: 0;
 }
 
 .capital-overview-card span {
@@ -571,6 +744,7 @@ tbody tr:hover {
   display: block;
   font-size: 19px;
   margin-bottom: 5px;
+  overflow-wrap: anywhere;
 }
 
 .capital-overview-card small {
@@ -591,21 +765,31 @@ tbody tr:hover {
   grid-template-columns: 1.4fr repeat(4, 1fr) auto;
   gap: 15px;
   align-items: center;
+  min-width: 0;
 }
 
 .capital-item + .capital-item {
   margin-top: 10px;
 }
 
+.capital-main {
+  min-width: 0;
+}
+
 .capital-main strong {
   display: block;
   font-size: 14px;
   margin-bottom: 5px;
+  overflow-wrap: anywhere;
 }
 
 .capital-main small {
   color: var(--muted);
   font-size: 11px;
+}
+
+.capital-stat {
+  min-width: 0;
 }
 
 .capital-stat span {
@@ -617,15 +801,19 @@ tbody tr:hover {
 
 .capital-stat strong {
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .capital-actions {
   display: flex;
   gap: 7px;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .icon-button {
+  min-width: 42px;
+  min-height: 42px;
   border: 1px solid var(--border);
   background: var(--panel);
   color: var(--text);
@@ -701,7 +889,9 @@ tbody tr:hover {
 }
 
 
-/* ACCORDION */
+/* =========================================================
+   ACCORDION
+========================================================= */
 
 .plan-section {
   background: var(--panel);
@@ -720,6 +910,7 @@ tbody tr:hover {
   cursor: pointer;
   list-style: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .plan-section summary::-webkit-details-marker {
@@ -760,11 +951,12 @@ tbody tr:hover {
   display: block;
   color: var(--muted);
   font-size: 11px;
+  line-height: 1.45;
 }
 
 .plan-chevron {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border: 1px solid var(--border);
   border-radius: 7px;
   display: flex;
@@ -772,7 +964,7 @@ tbody tr:hover {
   justify-content: center;
   color: var(--muted);
   transition: 0.2s;
-  flex: 0 0 28px;
+  flex: 0 0 36px;
 }
 
 .plan-section[open] .plan-chevron {
@@ -787,7 +979,9 @@ tbody tr:hover {
 }
 
 
-/* PLAN CARDS */
+/* =========================================================
+   PLAN CARDS
+========================================================= */
 
 .plan-two-columns {
   display: grid;
@@ -801,6 +995,7 @@ tbody tr:hover {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 17px;
+  min-width: 0;
 }
 
 .plan-info-card.full-width {
@@ -846,6 +1041,7 @@ tbody tr:hover {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 9px;
+  margin-top: 14px;
 }
 
 .bias-item {
@@ -904,12 +1100,15 @@ tbody tr:hover {
 }
 
 
-/* H4 */
+/* =========================================================
+   H4
+========================================================= */
 
 .question-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
+  padding-top: 16px;
 }
 
 .question-list > div {
@@ -972,12 +1171,15 @@ tbody tr:hover {
 }
 
 
-/* STRUCTURE */
+/* =========================================================
+   STRUCTURE
+========================================================= */
 
 .structure-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 9px;
+  padding-top: 16px;
 }
 
 .structure-grid > div {
@@ -1002,7 +1204,9 @@ tbody tr:hover {
 }
 
 
-/* ZONES */
+/* =========================================================
+   ZONES
+========================================================= */
 
 .zone-grid {
   display: grid;
@@ -1034,7 +1238,9 @@ tbody tr:hover {
 }
 
 
-/* GOLD SCENARIO */
+/* =========================================================
+   GOLD SCENARIO
+========================================================= */
 
 .scenario-flow {
   padding-top: 16px;
@@ -1042,7 +1248,7 @@ tbody tr:hover {
 
 .scenario-step {
   display: grid;
-  grid-template-columns: 30px 170px 1fr;
+  grid-template-columns: 30px 170px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   background: #0d1218;
@@ -1083,7 +1289,9 @@ tbody tr:hover {
 }
 
 
-/* EXECUTION */
+/* =========================================================
+   EXECUTION
+========================================================= */
 
 .execution-rule {
   display: flex;
@@ -1162,7 +1370,9 @@ tbody tr:hover {
 }
 
 
-/* MANDATORY */
+/* =========================================================
+   MANDATORY
+========================================================= */
 
 .mandatory-grid {
   display: grid;
@@ -1176,6 +1386,7 @@ tbody tr:hover {
   border: 1px solid var(--border);
   border-radius: 9px;
   padding: 13px;
+  min-width: 0;
 }
 
 .mandatory-item > span {
@@ -1221,7 +1432,9 @@ tbody tr:hover {
 }
 
 
-/* RISK / TP */
+/* =========================================================
+   RISK / TP
+========================================================= */
 
 .plan-rule-grid {
   display: grid;
@@ -1286,7 +1499,9 @@ tbody tr:hover {
 }
 
 
-/* MANAGEMENT */
+/* =========================================================
+   MANAGEMENT
+========================================================= */
 
 .management-timeline {
   padding: 20px 0 8px;
@@ -1325,7 +1540,9 @@ tbody tr:hover {
 }
 
 
-/* RULE LIST */
+/* =========================================================
+   RULE LIST
+========================================================= */
 
 .rule-columns {
   display: grid;
@@ -1376,7 +1593,9 @@ tbody tr:hover {
 }
 
 
-/* PROCESS */
+/* =========================================================
+   PROCESS
+========================================================= */
 
 .process-flow {
   padding-top: 16px;
@@ -1409,7 +1628,9 @@ tbody tr:hover {
 }
 
 
-/* PRINCIPLES */
+/* =========================================================
+   PRINCIPLES
+========================================================= */
 
 .principle-grid {
   display: grid;
@@ -1468,7 +1689,9 @@ tbody tr:hover {
 }
 
 
-/* CHECKLIST */
+/* =========================================================
+   CHECKLIST
+========================================================= */
 
 .checklist-panel {
   overflow: hidden;
@@ -1480,6 +1703,7 @@ tbody tr:hover {
 
 .checklist-progress-wrap {
   text-align: right;
+  flex-shrink: 0;
 }
 
 .checklist-progress-wrap strong {
@@ -1505,6 +1729,7 @@ tbody tr:hover {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 13px;
+  min-width: 0;
 }
 
 .checklist-category-title {
@@ -1522,6 +1747,7 @@ tbody tr:hover {
 }
 
 .trade-check {
+  min-height: 36px;
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -1530,11 +1756,11 @@ tbody tr:hover {
 }
 
 .trade-check input {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   accent-color: var(--primary);
-  margin-top: 1px;
-  flex: 0 0 14px;
+  margin-top: 0;
+  flex: 0 0 18px;
   cursor: pointer;
 }
 
@@ -1563,14 +1789,15 @@ tbody tr:hover {
   transition: 0.2s;
 }
 
+.trade-permission.allowed,
 .trade-permission.authorized {
   border-color: rgba(74, 222, 128, 0.25);
   background: rgba(74, 222, 128, 0.05);
 }
 
 .permission-icon {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 9px;
   background: rgba(248, 113, 113, 0.1);
   color: var(--danger);
@@ -1578,9 +1805,10 @@ tbody tr:hover {
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  flex: 0 0 34px;
+  flex: 0 0 38px;
 }
 
+.trade-permission.allowed .permission-icon,
 .trade-permission.authorized .permission-icon {
   background: rgba(74, 222, 128, 0.1);
   color: var(--primary);
@@ -1593,6 +1821,7 @@ tbody tr:hover {
   margin-bottom: 4px;
 }
 
+.trade-permission.allowed strong,
 .trade-permission.authorized strong {
   color: var(--primary);
 }
@@ -1600,10 +1829,13 @@ tbody tr:hover {
 .trade-permission p {
   color: var(--muted);
   font-size: 10px;
+  line-height: 1.5;
 }
 
 
-/* FINAL RULES */
+/* =========================================================
+   FINAL RULES
+========================================================= */
 
 .plan-final-rules {
   display: grid;
@@ -1633,7 +1865,9 @@ tbody tr:hover {
 }
 
 
-/* TRADE MODAL */
+/* =========================================================
+   TRADE MODAL
+========================================================= */
 
 .trade-capital-banner {
   background: #0d1218;
@@ -1646,6 +1880,10 @@ tbody tr:hover {
   margin-bottom: 20px;
 }
 
+.trade-capital-banner > div {
+  min-width: 0;
+}
+
 .trade-capital-banner span,
 .trade-result-preview span {
   display: block;
@@ -1656,6 +1894,7 @@ tbody tr:hover {
 
 .trade-capital-banner strong {
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .form-section-title {
@@ -1679,6 +1918,7 @@ tbody tr:hover {
   border: 1px solid var(--border);
   border-radius: 9px;
   padding: 13px;
+  min-width: 0;
 }
 
 .calculation-result span {
@@ -1690,6 +1930,7 @@ tbody tr:hover {
 
 .calculation-result strong {
   font-size: 14px;
+  overflow-wrap: anywhere;
 }
 
 .trade-result-preview {
@@ -1703,17 +1944,25 @@ tbody tr:hover {
   margin-bottom: 18px;
 }
 
+.trade-result-preview > div {
+  min-width: 0;
+}
+
 .trade-result-preview strong {
   font-size: 14px;
+  overflow-wrap: anywhere;
 }
 
 .field-help {
   color: var(--muted);
   font-size: 10px;
+  line-height: 1.5;
 }
 
 
-/* MODAL */
+/* =========================================================
+   MODALS
+========================================================= */
 
 .modal-overlay {
   position: fixed;
@@ -1722,8 +1971,13 @@ tbody tr:hover {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding:
+    max(20px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
   z-index: 1000;
+  overscroll-behavior: contain;
 }
 
 .modal-overlay.active {
@@ -1733,11 +1987,14 @@ tbody tr:hover {
 .modal {
   width: min(900px, 100%);
   max-height: 92vh;
+  max-height: 92dvh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 14px;
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+  -webkit-overflow-scrolling: touch;
 }
 
 .small-modal {
@@ -1745,11 +2002,20 @@ tbody tr:hover {
 }
 
 .modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--panel);
   padding: 19px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 15px;
+}
+
+.modal-header > div {
+  min-width: 0;
 }
 
 .modal-header h3 {
@@ -1760,6 +2026,7 @@ tbody tr:hover {
 .modal-header p {
   color: var(--muted);
   font-size: 11px;
+  line-height: 1.5;
 }
 
 .modal form {
@@ -1776,7 +2043,23 @@ tbody tr:hover {
 }
 
 
-/* RESPONSIVE */
+/* =========================================================
+   FOCUS / ACCESSIBILITY
+========================================================= */
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid rgba(74, 222, 128, 0.75);
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   LARGE TABLET
+========================================================= */
 
 @media (max-width: 1250px) {
 
@@ -1799,6 +2082,10 @@ tbody tr:hover {
 }
 
 
+/* =========================================================
+   TABLET / SMALL DESKTOP
+========================================================= */
+
 @media (max-width: 1200px) {
 
   .cards {
@@ -1819,6 +2106,10 @@ tbody tr:hover {
 
 }
 
+
+/* =========================================================
+   TABLET
+========================================================= */
 
 @media (max-width: 1000px) {
 
@@ -1853,27 +2144,61 @@ tbody tr:hover {
 }
 
 
+/* =========================================================
+   MOBILE NAVIGATION
+========================================================= */
+
 @media (max-width: 800px) {
 
   .sidebar {
-    width: 70px;
-    padding: 15px 8px;
+    width: var(--mobile-sidebar-width);
+    max-width: 86vw;
+    padding:
+      max(15px, env(safe-area-inset-top))
+      14px
+      max(15px, env(safe-area-inset-bottom));
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.35);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 850;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+    opacity: 1;
   }
 
   .logo {
-    justify-content: center;
-    padding: 5px 0 25px;
+    justify-content: flex-start;
+    padding: 5px 8px 25px;
   }
 
   .logo > div:last-child,
   .sidebar-footer {
-    display: none;
+    display: block;
   }
 
   .nav-button {
-    justify-content: center;
-    font-size: 0;
-    padding: 12px;
+    justify-content: flex-start;
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .nav-button strong {
+    display: block;
   }
 
   .nav-button span {
@@ -1881,9 +2206,17 @@ tbody tr:hover {
   }
 
   .main {
-    width: calc(100% - 70px);
-    margin-left: 70px;
-    padding: 0 15px 30px;
+    width: 100%;
+    margin-left: 0;
+    padding:
+      0
+      max(15px, env(safe-area-inset-right))
+      max(30px, env(safe-area-inset-bottom))
+      max(15px, env(safe-area-inset-left));
+  }
+
+  .mobile-menu-button {
+    display: flex;
   }
 
   .header {
@@ -1904,7 +2237,7 @@ tbody tr:hover {
   }
 
   .scenario-step {
-    grid-template-columns: 30px 1fr;
+    grid-template-columns: 30px minmax(0, 1fr);
   }
 
   .scenario-step p {
@@ -1914,7 +2247,29 @@ tbody tr:hover {
 }
 
 
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media (max-width: 600px) {
+
+  .main {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .header {
+    margin-bottom: 22px;
+    gap: 10px;
+  }
+
+  .header h2 {
+    font-size: 19px;
+  }
+
+  .header p {
+    font-size: 11px;
+  }
 
   .cards,
   .form-grid,
@@ -1928,6 +2283,20 @@ tbody tr:hover {
   .page-heading {
     align-items: flex-start;
     flex-direction: column;
+    gap: 14px;
+  }
+
+  .page-heading h3 {
+    font-size: 18px;
+  }
+
+  .page-heading p {
+    font-size: 12px;
+  }
+
+  .page-heading > .primary-button,
+  .page-heading > button {
+    width: 100%;
   }
 
   .plan-header-actions {
@@ -1936,14 +2305,20 @@ tbody tr:hover {
 
   .plan-header-actions button {
     flex: 1;
+    min-width: 0;
   }
 
   .dashboard-capital-selector {
     width: 100%;
   }
 
+  .dashboard-capital-selector label {
+    white-space: nowrap;
+  }
+
   .dashboard-capital-selector select {
     flex: 1;
+    min-width: 0;
   }
 
   .header-actions {
@@ -1954,12 +2329,65 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 
+  .capital-actions {
+    width: 100%;
+  }
+
+  .capital-actions .icon-button {
+    flex: 1;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
   .modal {
+    width: 100%;
+    max-width: 100%;
     max-height: 95vh;
+    max-height: 95dvh;
+    border-radius: 16px 16px 0 0;
+    border-bottom: 0;
+  }
+
+  .small-modal {
+    width: 100%;
+  }
+
+  .modal-header {
+    padding:
+      15px
+      15px
+      14px;
+  }
+
+  .modal form {
+    padding:
+      16px
+      15px
+      max(20px, env(safe-area-inset-bottom));
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    min-height: 44px;
   }
 
   .plan-intro {
     align-items: flex-start;
+    padding: 18px;
+  }
+
+  .plan-intro-icon {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+    font-size: 19px;
   }
 
   .plan-intro h3 {
@@ -1967,7 +2395,29 @@ tbody tr:hover {
   }
 
   .plan-section summary {
+    min-height: 68px;
     padding: 12px;
+    gap: 10px;
+  }
+
+  .plan-number {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .plan-summary-content strong {
+    font-size: 12px;
+  }
+
+  .plan-summary-content span {
+    font-size: 10px;
+  }
+
+  .plan-chevron {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
   }
 
   .plan-section-content {
@@ -1989,6 +2439,10 @@ tbody tr:hover {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .zone-card {
+    padding: 12px 8px;
+  }
+
   .management-timeline {
     flex-direction: column;
     align-items: center;
@@ -1996,6 +2450,7 @@ tbody tr:hover {
 
   .management-step {
     width: 100%;
+    max-width: 100%;
   }
 
   .management-line {
@@ -2016,6 +2471,134 @@ tbody tr:hover {
 
   .trade-permission {
     align-items: flex-start;
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .checklist-header {
+    align-items: flex-start;
+  }
+
+  .checklist-progress-wrap {
+    text-align: left;
+  }
+
+  .trade-check {
+    min-height: 42px;
+    align-items: center;
+  }
+
+  .trade-check input {
+    width: 20px;
+    height: 20px;
+    flex-basis: 20px;
+  }
+
+  .equity-chart {
+    min-height: 200px;
+    padding: 12px;
+  }
+
+  .table-container {
+    margin-bottom: 1px;
+  }
+
+  th,
+  td {
+    padding: 12px 13px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .main {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .header h2 {
+    font-size: 17px;
+  }
+
+  .page-heading h3 {
+    font-size: 17px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .card strong {
+    font-size: 21px;
+  }
+
+  .panel-header {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .zone-grid,
+  .mandatory-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-header-actions {
+    flex-direction: column;
+  }
+
+  .plan-header-actions button {
+    width: 100%;
+  }
+
+}
+
+
+/* =========================================================
+   LANDSCAPE PHONE
+========================================================= */
+
+@media (max-width: 800px) and (orientation: landscape) {
+
+  .modal {
+    max-height: 96vh;
+    max-height: 96dvh;
+  }
+
+  .modal-overlay {
+    align-items: center;
+    padding: 10px;
+  }
+
+  .modal {
+    border-radius: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 
 }
