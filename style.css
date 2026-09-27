@@ -42,6 +42,10 @@ button {
   cursor: pointer;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .app {
   min-height: 100vh;
   display: flex;
@@ -248,6 +252,31 @@ button {
 }
 
 
+/* SELECTORS */
+
+.dashboard-capital-selector,
+.dashboard-capital-selector label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-capital-selector label {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.dashboard-capital-selector select,
+.compact-select {
+  background: #0d1218;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 11px;
+  outline: none;
+}
+
+
 /* CARDS */
 
 .cards {
@@ -315,6 +344,30 @@ button {
 }
 
 
+/* EMPTY STATE */
+
+.empty-state {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 45px 20px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.empty-state strong {
+  display: block;
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+
+
 /* CHART */
 
 .equity-chart {
@@ -341,7 +394,7 @@ button {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 750px;
+  min-width: 1000px;
 }
 
 th,
@@ -402,6 +455,34 @@ tbody tr:hover {
 }
 
 
+/* GLOBAL PERFORMANCE */
+
+.global-performance-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 18px;
+}
+
+.global-stat {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 15px;
+}
+
+.global-stat span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 7px;
+}
+
+.global-stat strong {
+  font-size: 18px;
+}
+
+
 /* FORMS */
 
 .form-grid {
@@ -445,11 +526,6 @@ tbody tr:hover {
   resize: vertical;
 }
 
-.form-group input[readonly] {
-  color: var(--muted);
-  cursor: default;
-}
-
 .panel > .form-grid,
 .panel > .form-group,
 .panel > .checklist {
@@ -464,206 +540,100 @@ tbody tr:hover {
 
 /* CAPITALS */
 
-.capital-container {
-  padding: 19px;
-}
-
-.empty-capital {
-  color: var(--muted);
-  font-size: 13px;
-  text-align: center;
-  padding: 35px 15px;
-}
-
-.capital-card {
-  background: #0d1218;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 18px;
-  margin-bottom: 12px;
-}
-
-.capital-card:last-child {
-  margin-bottom: 0;
-}
-
-.capital-card.active-capital {
-  border-color: rgba(74, 222, 128, 0.35);
-}
-
-.capital-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 15px;
+.capital-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
   margin-bottom: 18px;
 }
 
-.capital-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  flex-wrap: wrap;
-}
-
-.capital-title h4 {
-  font-size: 15px;
-}
-
-.capital-badge {
-  color: var(--primary);
-  background: rgba(74, 222, 128, 0.1);
-  border: 1px solid rgba(74, 222, 128, 0.2);
-  border-radius: 999px;
-  padding: 4px 8px;
-  font-size: 10px;
-  font-weight: 600;
-}
-
-.archived-badge {
-  color: var(--muted);
-  background: rgba(139, 152, 168, 0.08);
-  border: 1px solid var(--border);
-}
-
-.capital-actions {
-  display: flex;
-  gap: 7px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.capital-actions button {
-  border: 1px solid var(--border);
+.capital-overview-card {
   background: var(--panel);
-  color: var(--text);
-  border-radius: 7px;
-  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.capital-overview-card span {
+  color: var(--muted);
+  font-size: 11px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.capital-overview-card strong {
+  display: block;
+  font-size: 19px;
+  margin-bottom: 5px;
+}
+
+.capital-overview-card small {
+  color: var(--muted);
   font-size: 11px;
 }
 
-.capital-actions button:hover {
-  background: var(--panel-hover);
+.capital-list {
+  padding: 18px;
 }
 
-.capital-actions .danger-action {
-  color: var(--danger);
-}
-
-.capital-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-
-.capital-stat {
-  background: var(--panel);
+.capital-item {
+  background: #0d1218;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 17px;
+  display: grid;
+  grid-template-columns: 1.4fr repeat(4, 1fr) auto;
+  gap: 15px;
+  align-items: center;
+}
+
+.capital-item + .capital-item {
+  margin-top: 10px;
+}
+
+.capital-main strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.capital-main small {
+  color: var(--muted);
+  font-size: 11px;
 }
 
 .capital-stat span {
   display: block;
   color: var(--muted);
   font-size: 10px;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .capital-stat strong {
-  font-size: 14px;
+  font-size: 13px;
 }
 
-.capital-stat small {
-  display: block;
-  color: var(--muted);
-  font-size: 10px;
-  margin-top: 4px;
-}
-
-
-/* TRADE CAPITAL */
-
-.trade-active-capital {
-  background: #0d1218;
-  border: 1px solid rgba(74, 222, 128, 0.2);
-  border-radius: 8px;
-  padding: 11px 13px;
-  margin-bottom: 17px;
+.capital-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+  gap: 7px;
+  justify-content: flex-end;
 }
 
-.trade-active-capital span {
-  color: var(--muted);
+.icon-button {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 7px;
+  padding: 7px 9px;
   font-size: 11px;
 }
 
-.trade-active-capital strong {
-  color: var(--primary);
-  font-size: 12px;
+.icon-button:hover {
+  background: var(--panel-hover);
 }
 
-
-/* CALCULATOR */
-
-.calculator-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
-  gap: 18px;
-}
-
-.calculator-results {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  padding: 5px 19px 20px;
-}
-
-.result {
-  background: #0d1218;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 14px;
-}
-
-.result span {
-  display: block;
-  color: var(--muted);
-  font-size: 11px;
-  margin-bottom: 7px;
-}
-
-.result strong {
-  font-size: 15px;
-}
-
-.calculator-info {
-  padding: 20px;
-  height: fit-content;
-}
-
-.calculator-info h3 {
-  margin-bottom: 12px;
-  font-size: 16px;
-}
-
-.calculator-info p {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.7;
-  margin-bottom: 15px;
-}
-
-.formula {
-  background: #0d1218;
-  border: 1px solid var(--border);
-  padding: 13px;
-  border-radius: 8px;
-  color: var(--primary);
-  font-size: 12px;
+.icon-button.danger {
+  color: var(--danger);
 }
 
 
@@ -699,6 +669,86 @@ tbody tr:hover {
 }
 
 
+/* TRADE MODAL */
+
+.trade-capital-banner {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.trade-capital-banner span,
+.trade-result-preview span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 5px;
+}
+
+.trade-capital-banner strong {
+  font-size: 13px;
+}
+
+.form-section-title {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 9px;
+  margin: 7px 0 17px;
+}
+
+.trade-calculation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 3px 0 18px;
+}
+
+.calculation-result {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 13px;
+}
+
+.calculation-result span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+.calculation-result strong {
+  font-size: 14px;
+}
+
+.trade-result-preview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  background: rgba(74, 222, 128, 0.04);
+  border: 1px solid rgba(74, 222, 128, 0.15);
+  border-radius: 9px;
+  padding: 13px;
+  margin-bottom: 18px;
+}
+
+.trade-result-preview strong {
+  font-size: 14px;
+}
+
+.field-help {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+
 /* MODAL */
 
 .modal-overlay {
@@ -717,8 +767,8 @@ tbody tr:hover {
 }
 
 .modal {
-  width: min(850px, 100%);
-  max-height: 90vh;
+  width: min(900px, 100%);
+  max-height: 92vh;
   overflow-y: auto;
   background: var(--panel);
   border: 1px solid var(--border);
@@ -726,8 +776,8 @@ tbody tr:hover {
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
 }
 
-.capital-modal {
-  width: min(700px, 100%);
+.small-modal {
+  width: min(500px, 100%);
 }
 
 .modal-header {
@@ -764,19 +814,33 @@ tbody tr:hover {
 
 /* RESPONSIVE */
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
 
   .cards {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .calculator-grid,
-  .plan-grid {
-    grid-template-columns: 1fr;
+  .capital-item {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .capital-stats {
+  .capital-actions {
+    justify-content: flex-start;
+  }
+
+}
+
+
+@media (max-width: 1000px) {
+
+  .trade-calculation-grid,
+  .trade-result-preview,
+  .global-performance-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .capital-overview {
+    grid-template-columns: 1fr;
   }
 
 }
@@ -795,13 +859,13 @@ tbody tr:hover {
   }
 
   .logo > div:last-child,
-  .sidebar-footer,
-  .nav-button {
-    font-size: 0;
+  .sidebar-footer {
+    display: none;
   }
 
   .nav-button {
     justify-content: center;
+    font-size: 0;
     padding: 12px;
   }
 
@@ -819,12 +883,8 @@ tbody tr:hover {
     min-height: 75px;
   }
 
-  .capital-card-header {
-    flex-direction: column;
-  }
-
-  .capital-actions {
-    justify-content: flex-start;
+  .capital-item {
+    grid-template-columns: repeat(2, 1fr);
   }
 
 }
@@ -832,20 +892,13 @@ tbody tr:hover {
 
 @media (max-width: 600px) {
 
-  .cards {
+  .cards,
+  .form-grid,
+  .trade-capital-banner,
+  .trade-calculation-grid,
+  .trade-result-preview,
+  .global-performance-grid {
     grid-template-columns: 1fr;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .calculator-results {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .capital-stats {
-    grid-template-columns: 1fr 1fr;
   }
 
   .page-heading {
@@ -853,30 +906,24 @@ tbody tr:hover {
     flex-direction: column;
   }
 
+  .dashboard-capital-selector {
+    width: 100%;
+  }
+
+  .dashboard-capital-selector select {
+    flex: 1;
+  }
+
   .header-actions {
     display: none;
   }
 
+  .capital-item {
+    grid-template-columns: 1fr;
+  }
+
   .modal {
     max-height: 95vh;
-  }
-
-  .trade-active-capital {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-}
-
-
-@media (max-width: 400px) {
-
-  .calculator-results {
-    grid-template-columns: 1fr;
-  }
-
-  .capital-stats {
-    grid-template-columns: 1fr;
   }
 
 }
